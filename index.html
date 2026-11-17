@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#5b21b6">
+<title>کلاس آنلاین</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<script>
+(function(){var c='no-session';try{var s=JSON.parse(localStorage.getItem('lms_session')||'null');if(s&&s.token&&Date.now()-s.ts<19800000)c='has-session';}catch(e){}document.documentElement.className=c;})();
+</script>
+<script src="config.js"></script>
+<script src="api-shim.js"></script>
+<style>
+:root{--bg:#f4f3fb;--card:#fff;--ink:#1e1b3a;--muted:#6b7280;--line:#ebe8f5;--p:#6d28d9;--p2:#4f46e5;--good:#059669;--bad:#dc2626;--warn:#d97706;--info:#2563eb;--sh:0 1px 2px rgba(30,27,58,.04),0 8px 24px rgba(30,27,58,.07)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{margin:0;padding:0}
+body{font-family:'Vazirmatn',Tahoma,'Noto Sans Arabic','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.65;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+html.no-session #app{display:none}
+html.has-session #login{display:none}
+.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block}
+.ico{display:inline-flex;vertical-align:middle}
+
+/* ورود */
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(160deg,#5b21b6 0%,#4f46e5 55%,#0ea5e9 130%)}
+.login-card{width:100%;max-width:400px;background:#fff;border-radius:28px;padding:28px 22px;box-shadow:0 24px 60px rgba(30,27,58,.35);text-align:center}
+.logo{width:78px;height:78px;border-radius:24px;box-shadow:0 10px 24px rgba(109,40,217,.35)}
+.login-card h1{font-size:1.35rem;margin:14px 0 2px;font-weight:800}
+.login-card .sub{color:var(--muted);font-size:.85rem;margin:0 0 20px}
+.field{text-align:right;margin-bottom:14px}
+.field>label,.lbl{display:block;font-size:.82rem;font-weight:700;margin-bottom:6px;color:#374151}
+.inp{width:100%;min-height:48px;border:2px solid var(--line);border-radius:14px;background:#faf9ff;padding:10px 14px;font-weight:600;outline:none;transition:.2s}
+textarea.inp{min-height:96px;resize:vertical;line-height:1.7}
+.inp:focus{border-color:var(--p);background:#fff;box-shadow:0 0 0 4px rgba(109,40,217,.12)}
+select.inp{appearance:auto}
+.err{background:#fef2f2;color:#b91c1c;border-radius:12px;padding:10px 12px;font-size:.85rem;font-weight:600;margin-bottom:14px;text-align:right}
+
+/* دکمه */
+.btn{min-height:46px;border-radius:14px;border:0;font-weight:800;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s,opacity .2s;background:#f1effb;color:var(--p)}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.btn.block{width:100%}
+.btn.pri{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;box-shadow:0 10px 22px rgba(109,40,217,.28)}
+.btn.good{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
+.btn.bad{background:#fee2e2;color:#b91c1c}
+.btn.sm{min-height:36px;padding:0 12px;font-size:.82rem;border-radius:11px}
+.ibtn{width:42px;height:42px;border-radius:12px;border:0;background:rgba(255,255,255,.18);color:#fff;display:grid;place-items:center;position:relative}
+.ibtn:active{transform:scale(.93)}
+.spin{width:18px;height:18px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:rot .8s linear infinite;display:inline-block}
+.spin.dark{border-color:rgba(109,40,217,.25);border-top-color:var(--p)}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* قاب */
+.shell{max-width:720px;margin:0 auto;min-height:100vh;padding-bottom:calc(28px + env(safe-area-inset-bottom))}
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top));background:linear-gradient(135deg,#5b21b6,#4f46e5);color:#fff;border-radius:0 0 22px 22px;box-shadow:0 8px 24px rgba(79,70,229,.3)}
+.topbar .ttl{flex:1;min-width:0}
+.topbar .ttl b{display:block;font-size:1.02rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .ttl span{display:block;font-size:.74rem;opacity:.88;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.avatar{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.5);display:grid;place-items:center;font-weight:800;flex-shrink:0}
+.main{padding:14px 14px 8px}
+.view{animation:fade .22s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.dot{position:absolute;top:5px;inset-inline-start:5px;min-width:18px;height:18px;border-radius:9px;background:#ef4444;color:#fff;font-size:.68rem;font-weight:800;display:grid;place-items:center;padding:0 4px}
+
+/* کارت‌ها */
+.card{background:var(--card);border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:var(--sh)}
+.card h3{margin:0 0 8px;font-size:.95rem;font-weight:800}
+.sub{font-size:.78rem;color:var(--muted)}
+.row{display:flex;align-items:center;gap:10px}
+.grow{flex:1;min-width:0}
+.title{font-weight:700;font-size:.93rem;overflow-wrap:anywhere}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:999px;font-size:.72rem;font-weight:800;white-space:nowrap}
+.b-good{background:#d1fae5;color:#065f46}.b-bad{background:#fee2e2;color:#991b1b}.b-warn{background:#fef3c7;color:#92400e}.b-info{background:#dbeafe;color:#1e40af}.b-gray{background:#eef0f4;color:#374151}.b-pri{background:#ede9fe;color:#5b21b6}
+.empty{text-align:center;color:var(--muted);padding:34px 14px;background:#fff;border-radius:18px;border:1.5px dashed #d8d2f0;margin-bottom:12px}
+.empty .big{font-size:2.2rem;margin-bottom:6px}
+.empty.er{color:#b91c1c;border-color:#fecaca;background:#fff7f7}
+.empty .btn{margin-top:12px}
+.sk{height:14px;border-radius:8px;background:linear-gradient(90deg,#ece9f7,#f8f7fd,#ece9f7);background-size:200% 100%;animation:sh 1.2s linear infinite;margin:12px 0}
+@keyframes sh{to{background-position:-200% 0}}
+.pill-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.pstat{background:#fff;border-radius:16px;padding:10px 4px;text-align:center;box-shadow:var(--sh)}
+.pstat b{display:block;font-size:1.25rem;font-weight:900;line-height:1.3}
+.pstat span{font-size:.7rem;color:var(--muted);font-weight:700}
+
+/* کاشی کلاس‌ها */
+.grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:520px){.grid{grid-template-columns:1fr 1fr}}
+.ctile{border:0;text-align:right;color:#fff;border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:10px;min-height:128px;box-shadow:0 14px 28px rgba(15,23,42,.16);position:relative;overflow:hidden;transition:transform .15s}
+.ctile:active{transform:scale(.97)}
+.ctile::after{content:'';position:absolute;inset-inline-start:-30px;bottom:-40px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.12)}
+.ctile .em{width:46px;height:46px;border-radius:15px;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:1.6rem}
+.ctile b{font-size:1.08rem;font-weight:900;line-height:1.4}
+.ctile .t2{font-size:.78rem;opacity:.92;font-weight:600}
+.ctile .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;position:relative;z-index:1}
+.chip{background:rgba(255,255,255,.24);border-radius:999px;padding:2px 10px;font-size:.72rem;font-weight:800}
+.chip.hot{background:#fff;color:#be123c}
+
+/* سربرگ کلاس + تب‌ها */
+.chead{border-radius:20px;color:#fff;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;box-shadow:0 12px 26px rgba(15,23,42,.16)}
+.chead .em{width:48px;height:48px;border-radius:15px;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:1.7rem;flex-shrink:0}
+.chead b{display:block;font-size:1.1rem;font-weight:900}
+.chead span{font-size:.78rem;opacity:.92}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 10px;margin-bottom:4px;scrollbar-width:none;position:sticky;top:calc(62px + env(safe-area-inset-top));z-index:20;background:linear-gradient(var(--bg) 82%,transparent)}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1 0 auto;min-width:0;border:0;background:#fff;border-radius:14px;padding:9px 12px;font-weight:800;font-size:.84rem;color:#6b7280;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 1px 3px rgba(30,27,58,.08);white-space:nowrap;position:relative}
+.tab.on{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;box-shadow:0 8px 18px rgba(109,40,217,.28)}
+.tab .n{background:#ef4444;color:#fff;border-radius:9px;min-width:18px;height:18px;font-size:.68rem;display:grid;place-items:center;padding:0 4px}
+
+/* ردیف‌ها */
+.item{display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:12px;margin-bottom:10px;box-shadow:var(--sh);border:0;width:100%;text-align:right}
+button.item:active{transform:scale(.985)}
+.item .em{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex-shrink:0;font-size:1.2rem}
+.em-pri{background:#ede9fe;color:#5b21b6}.em-good{background:#d1fae5;color:#047857}.em-warn{background:#fef3c7;color:#b45309}.em-info{background:#dbeafe;color:#1d4ed8}.em-bad{background:#fee2e2;color:#b91c1c}
+.score{min-width:54px;text-align:center;padding:6px 8px;border-radius:12px;font-weight:900;font-size:.92rem}
+.s-pass{background:#d1fae5;color:#047857}.s-fail{background:#fee2e2;color:#b91c1c}.s-na{background:#eef0f4;color:#6b7280}
+.bar{height:8px;border-radius:6px;background:#eceaf6;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#8b5cf6,#4f46e5)}
+.sec{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:14px 2px 8px;font-weight:800}
+.sec h3{margin:0;font-size:.98rem}
+.desc{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.9rem;color:#374151}
+.note{border-radius:12px;padding:10px 12px;font-size:.85rem;margin-top:10px}
+.note.ok{background:#ecfdf5;color:#065f46}.note.er{background:#fef2f2;color:#b91c1c}.note.in{background:#eff6ff;color:#1e40af}.note.wr{background:#fffbeb;color:#92400e}
+.filebox{display:flex;align-items:center;gap:10px;background:#f7f5ff;border:1.5px dashed #c9bdf5;border-radius:14px;padding:10px 12px}
+.seg{display:flex;background:#eceaf6;border-radius:14px;padding:4px;gap:4px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:none;border-radius:11px;padding:9px 6px;font-weight:800;font-size:.85rem;color:#6b7280}
+.seg button.on{background:#fff;color:var(--p);box-shadow:0 2px 8px rgba(30,27,58,.12)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sw{display:flex;align-items:center;gap:10px;background:#faf9ff;border:2px solid var(--line);border-radius:14px;padding:10px 12px;font-weight:700;font-size:.88rem}
+.sw input{width:20px;height:20px;accent-color:var(--p)}
+
+/* چت */
+.chat{display:flex;flex-direction:column;gap:8px;padding:4px 0 8px;min-height:140px}
+.msg{max-width:84%;padding:9px 12px;border-radius:16px;font-size:.9rem;overflow-wrap:anywhere;white-space:pre-wrap;line-height:1.7}
+.msg small{display:block;font-size:.68rem;opacity:.75;margin-top:3px}
+.msg.me{align-self:flex-start;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;border-end-start-radius:4px}
+.msg.you{align-self:flex-end;background:#fff;box-shadow:var(--sh);border-end-end-radius:4px}
+.msg.ann{align-self:stretch;max-width:100%;background:#fffbeb;border:1.5px solid #fcd34d;color:#92400e;text-align:center}
+.composer{position:sticky;bottom:0;display:flex;gap:8px;align-items:flex-end;background:linear-gradient(transparent,var(--bg) 30%);padding:10px 0 calc(8px + env(safe-area-inset-bottom))}
+.composer textarea{flex:1;min-height:46px;max-height:130px;border:2px solid var(--line);border-radius:16px;padding:10px 14px;background:#fff;outline:none;resize:none}
+.composer textarea:focus{border-color:var(--p)}
+.composer .btn{min-height:46px;width:48px;padding:0}
+
+/* آزمون */
+.qcard{background:#fff;border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:var(--sh)}
+.qcard .qt{font-weight:800;margin-bottom:10px;overflow-wrap:anywhere;white-space:pre-wrap}
+.opt{display:flex;align-items:center;gap:10px;width:100%;text-align:right;border:2px solid var(--line);background:#faf9ff;border-radius:14px;padding:11px 12px;margin-bottom:8px;font-weight:600;overflow-wrap:anywhere}
+.opt .rd{width:22px;height:22px;border-radius:50%;border:2px solid #c4b5fd;flex-shrink:0;display:grid;place-items:center;font-size:.7rem;font-weight:800;color:#fff}
+.opt.on{border-color:var(--p);background:#f3eeff}
+.opt.on .rd{background:var(--p);border-color:var(--p)}
+.opt.right{border-color:#10b981;background:#ecfdf5}.opt.wrong{border-color:#ef4444;background:#fef2f2}
+.timer{position:sticky;top:calc(62px + env(safe-area-inset-top));z-index:20;background:#fff;border-radius:16px;padding:10px 14px;margin-bottom:12px;box-shadow:var(--sh);display:flex;align-items:center;gap:12px}
+.timer b{font-size:1.2rem;font-variant-numeric:tabular-nums}
+.timer.low b{color:#dc2626;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.result-big{text-align:center;padding:24px 14px}
+.result-big .n{font-size:3rem;font-weight:900;background:linear-gradient(135deg,var(--p),var(--p2));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.2}
+
+/* سازندهٔ سؤال */
+.qb{border:2px solid var(--line);border-radius:16px;padding:12px;margin-bottom:12px;background:#fff}
+.qb .qh{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-weight:800}
+.orow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.orow input[type=radio]{width:20px;height:20px;accent-color:#059669;flex-shrink:0}
+.orow .inp{min-height:42px;padding:6px 12px}
+
+/* جدول نمرات */
+.tbl-wrap{overflow:auto;border-radius:16px;background:#fff;box-shadow:var(--sh);margin-bottom:12px;-webkit-overflow-scrolling:touch;max-height:70vh}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:.82rem}
+th,td{padding:9px 10px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+thead th{position:sticky;top:0;background:#f3eeff;z-index:2;font-weight:800;color:#4c1d95}
+th.col-btn{cursor:pointer}
+td.nm,th.nm{position:sticky;inset-inline-start:0;background:#fff;text-align:right;font-weight:700;z-index:1;min-width:120px;box-shadow:-2px 0 4px rgba(30,27,58,.04)}
+thead th.nm{background:#f3eeff;z-index:3}
+td.avg,th.avg{background:#faf5ff;font-weight:900}
+.gin{width:70px;min-height:38px;border:2px solid var(--line);border-radius:10px;text-align:center;font-weight:800;background:#faf9ff;outline:none;padding:0 4px}
+.gin:focus{border-color:var(--p);background:#fff}
+.gin.bad{border-color:#ef4444;background:#fef2f2}
+
+.toast{position:fixed;top:12px;left:12px;right:12px;max-width:600px;margin:0 auto;z-index:200;padding:12px 16px;border-radius:14px;background:#1e1b3a;color:#fff;font-weight:600;font-size:.88rem;box-shadow:0 12px 30px rgba(0,0,0,.25);opacity:0;transform:translateY(-14px);pointer-events:none;transition:.25s}
+.toast.show{opacity:1;transform:none}.toast.er{background:#b91c1c}.toast.ok{background:#047857}
+.overlay{position:fixed;inset:0;z-index:150;background:#fff;display:flex;flex-direction:column}
+.overlay .oh{display:flex;align-items:center;gap:10px;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top));background:linear-gradient(135deg,#5b21b6,#4f46e5);color:#fff}
+.overlay .oh b{flex:1}
+.overlay iframe,.overlay .ob{flex:1;border:0;width:100%;background:#fff}
+.overlay .ob{overflow:auto;padding:14px;text-align:center}
+.overlay .ob img{max-width:100%;height:auto;border-radius:12px}
+.confirm-bg{position:fixed;inset:0;z-index:300;background:rgba(15,23,42,.5);display:grid;place-items:center;padding:20px}
+.confirm{background:#fff;border-radius:22px;padding:20px;max-width:380px;width:100%}
+.confirm p{margin:0 0 16px;font-weight:700}
+.confirm .acts{display:flex;gap:8px}
+.confirm .acts .btn{flex:1}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.avatar.sm{width:38px;height:38px;background:linear-gradient(135deg,var(--p),var(--p2));border:0;color:#fff}
+.ibtn.sm{width:34px;height:34px;background:#f3eeff;color:var(--p)}
+td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
+.tab{padding:9px 7px!important;font-size:.76rem!important;gap:4px!important;flex:1 1 0!important}.tab .ic{width:16px;height:16px}
+.two>*{min-width:0}.inp{max-width:100%;min-width:0}input[type=date],input[type=datetime-local]{width:100%;-webkit-appearance:none;appearance:none;text-align:right}html,body{overflow-x:hidden}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" transform="scale(-1,1) translate(-24,0)"/><path d="M20 12H5" transform="scale(1)"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></symbol>
+  <symbol id="i-clip" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3h6v3H9zM9 11h6M9 15h4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4M7 8l5-5 5 5M4 21h16"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+  <symbol id="i-mega" viewBox="0 0 24 24"><path d="M3 11v2a2 2 0 0 0 2 2h2l5 4V5L7 9H5a2 2 0 0 0-2 2zM16 8a5 5 0 0 1 0 8"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6M17 5a3.5 3.5 0 0 1 0 7M22 20c0-2.6-1.7-4.6-4.5-5.5"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></symbol>
+</svg>
+
+<div id="toast" class="toast" role="status"></div>
+
+<main id="login" class="login">
+  <form class="login-card" id="loginForm" onsubmit="return false">
+    <img class="logo" src="icon-192.png" alt="">
+    <h1>کلاس آنلاین</h1>
+    <p class="sub">ورود دانش‌آموزان و معلمان</p>
+    <div id="loginErr" class="err" hidden></div>
+    <div class="field"><label for="username">نام کاربری</label><input class="inp" id="username" autocomplete="username" inputmode="text" placeholder="کد دانش‌آموز یا نام کاربری معلم"></div>
+    <div class="field"><label for="password">رمز عبور</label><input class="inp" id="password" type="password" autocomplete="current-password" placeholder="رمز عبور"></div>
+    <button id="loginBtn" type="submit" class="btn pri block"><span class="spin" id="loginSpin" hidden></span><span id="loginTxt">ورود</span></button>
+  </form>
+</main>
+
+<div id="app">
+  <div class="shell">
+    <header class="topbar" id="topbar"></header>
+    <div class="main" id="main"></div>
+  </div>
+</div>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var SKEY = 'lms_session', MAXAGE = 19800000;
+  var S = { token: '', role: '', user: null };
+  var stack = [], rid = 0, leaveFns = [], guard = null;
+  var VIEWS = {};
+
+  /* ---------- ابزارها ---------- */
+  var FA = '۰۱۲۳۴۵۶۷۸۹';
+  function fa(n) { return String(n).replace(/\d/g, function (d) { return FA[d]; }); }
+  function num(n) { if (n == null || n === '') return '—'; return fa(Math.round(Number(n) * 100) / 100); }
+  function fmtDay(s) {
+    if (!s) return '';
+    try { return new Intl.DateTimeFormat('fa-IR-u-ca-persian', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(String(s).slice(0, 10) + 'T12:00:00')); } catch (e) { return s; }
+  }
+  function fmtDT(iso) {
+    if (!iso) return '';
+    try { return new Intl.DateTimeFormat('fa-IR-u-ca-persian', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso)); } catch (e) { return iso; }
+  }
+  function h(tag, attrs) {
+    var e = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      var v = attrs[k];
+      if (v == null || v === false) continue;
+      if (k === 'class') e.className = v;
+      else if (k === 'text') e.textContent = v;
+      else if (k === 'html') e.innerHTML = v;
+      else if (k === 'value' || k === 'checked' || k === 'disabled' || k === 'selected') e[k] = v;
+      else if (k.indexOf('on') === 0) e.addEventListener(k.slice(2), v);
+      else e.setAttribute(k, v === true ? '' : v);
+    }
+    for (var i = 2; i < arguments.length; i++) {
+      var c = arguments[i];
+      if (Array.isArray(c)) c.forEach(function (x) { if (x != null && x !== false) e.append(x.nodeType ? x : String(x)); });
+      else if (c != null && c !== false) e.append(c.nodeType ? c : String(c));
+    }
+    return e;
+  }
+  function ic(n) { var s = document.createElement('span'); s.className = 'ico'; s.innerHTML = '<svg class="ic" aria-hidden="true"><use href="#i-' + n + '"></use></svg>'; return s; }
+  var tt;
+  function toast(msg, type) { var t = $('toast'); t.textContent = msg; t.className = 'toast show ' + (type || ''); clearTimeout(tt); tt = setTimeout(function () { t.className = 'toast'; }, 3800); }
+  function ask(msg, okLabel, danger) {
+    return new Promise(function (res) {
+      var bg = h('div', { class: 'confirm-bg' });
+      function close(v) { bg.remove(); res(v); }
+      bg.append(h('div', { class: 'confirm' }, h('p', { text: msg }),
+        h('div', { class: 'acts' }, h('button', { class: 'btn ' + (danger ? 'bad' : 'pri'), text: okLabel || 'تأیید', onclick: function () { close(true); } }),
+          h('button', { class: 'btn', text: 'انصراف', onclick: function () { close(false); } }))));
+      document.body.append(bg);
+    });
+  }
+  function hash(s) { var x = 0; s = String(s); for (var i = 0; i < s.length; i++) x = (x * 31 + s.charCodeAt(i)) >>> 0; return x; }
+  var PAL = [['#6d28d9', '#4f46e5'], ['#0ea5e9', '#2563eb'], ['#10b981', '#059669'], ['#f59e0b', '#ea580c'], ['#ec4899', '#be185d'], ['#14b8a6', '#0d9488'], ['#8b5cf6', '#6d28d9'], ['#ef4444', '#dc2626']];
+  function grad(l) { var p = PAL[hash(l) % PAL.length]; return 'linear-gradient(135deg,' + p[0] + ',' + p[1] + ')'; }
+  var EMO = [[/ریاض|هندسه|حساب|آمار/, '➗'], [/زبان|انگلیس|عربی/, '🌐'], [/فیزیک/, '⚛️'], [/شیمی/, '🧪'], [/زیست|علوم/, '🧬'], [/ادب|فارسی|نگارش/, '📖'],
+    [/دین|قرآن|معارف/, '🕌'], [/تاریخ|جغراف|اجتماع/, '🌍'], [/کامپیوتر|رایانه|برنامه|شبکه|دیجیتال|نرم/, '💻'], [/ورزش/, '⚽'], [/هنر|نقاش|طراح/, '🎨'],
+    [/برق|الکترون/, '⚡'], [/مکانیک|نقشه|ماشین|خودرو/, '⚙️'], [/حسابدار|اقتصاد|مالی|بازرگان/, '💼']];
+  function emoji(l) { for (var i = 0; i < EMO.length; i++) if (EMO[i][0].test(l)) return EMO[i][1]; return '📚'; }
+  function firstName(n) { return String(n || '').trim().split(/\s+/)[0] || ''; }
+  function badge(cls, text) { return h('span', { class: 'badge ' + cls, text: text }); }
+  function skeleton(box) { box.textContent = ''; box.append(h('div', { class: 'card' }, h('div', { class: 'sk', style: 'width:45%' }), h('div', { class: 'sk' }), h('div', { class: 'sk' }), h('div', { class: 'sk', style: 'width:70%' }))); }
+  function emptyBox(big, text, btn) { return h('div', { class: 'empty' }, h('div', { class: 'big', text: big }), h('div', { text: text }), btn || null); }
+  function errBox(e, retry) { return h('div', { class: 'empty er' }, h('div', { class: 'big', text: '⚠️' }), h('div', { text: (e && e.message) || 'خطا در دریافت اطلاعات.' }), h('button', { class: 'btn', text: 'تلاش دوباره', onclick: retry })); }
+  function scoreCls(s, max) { if (s == null) return 's-na'; return s / (max || 20) >= 0.5 ? 's-pass' : 's-fail'; }
+  function scoreEl(s, max) { return h('div', { class: 'score ' + scoreCls(s, max), text: s == null ? '—' : num(s) + '/' + num(max) }); }
+  function busy(btn, on, label) { btn.disabled = on; if (on) { btn.dataset.l = btn.innerHTML; btn.innerHTML = ''; btn.append(h('span', { class: 'spin' }), ' ' + (label || 'لطفاً صبر کنید…')); } else if (btn.dataset.l) btn.innerHTML = btn.dataset.l; }
+
+  function readFile(inp) {
+    return new Promise(function (res, rej) {
+      var f = inp && inp.files && inp.files[0];
+      if (!f) return res(null);
+      if (f.size > 8 * 1024 * 1024) return rej(new Error('حجم فایل نباید بیشتر از ۸ مگابایت باشد.'));
+      var fr = new FileReader();
+      fr.onload = function () { res({ name: f.name, base64: String(fr.result).split(',')[1] || '' }); };
+      fr.onerror = function () { rej(new Error('خواندن فایل ناموفق بود.')); };
+      fr.readAsDataURL(f);
+    });
+  }
+  function b64bytes(b64) { var bin = atob(b64), a = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return a; }
+  function downloadBlob(blob, name) {
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
+  }
+
+  /* ---------- ارتباط با سرور ---------- */
+  function rpc(fn, args) {
+    return new Promise(function (res, rej) {
+      var r = google.script.run.withSuccessHandler(res).withFailureHandler(rej);
+      r[fn].apply(r, args);
+    });
+  }
+  function call(fn) {
+    var a = Array.prototype.slice.call(arguments, 1);
+    return rpc(fn, [S.token].concat(a)).catch(function (e) {
+      if (e && e.code === 'AUTH') forceLogout(e.message);
+      throw e;
+    });
+  }
+
+  /* ---------- نشست ---------- */
+  function setLoginErr(m) { var b = $('loginErr'); b.textContent = m || ''; b.hidden = !m; }
+  function loginBusy(on) { $('loginBtn').disabled = on; $('loginSpin').hidden = !on; $('loginTxt').textContent = on ? 'در حال ورود…' : 'ورود'; }
+  function doLogin() {
+    var u = $('username').value.trim(), p = $('password').value.trim();
+    if (!u || !p) return setLoginErr('نام کاربری و رمز عبور را وارد کنید.');
+    setLoginErr(''); loginBusy(true);
+    rpc('lmsLogin', [u, p]).then(function (r) {
+      loginBusy(false);
+      if (!r || !r.success) return setLoginErr((r && r.error) || 'ورود ناموفق بود.');
+      S = { token: r.token, role: r.role, user: r.user, ts: Date.now() };
+      try { localStorage.setItem(SKEY, JSON.stringify(S)); } catch (e) {}
+      $('password').value = '';
+      start();
+    }).catch(function (e) { loginBusy(false); setLoginErr(e && e.message ? e.message : 'خطا در ارتباط با سرور.'); });
+  }
+  $('loginForm').addEventListener('submit', function (e) { e.preventDefault(); doLogin(); });
+  $('loginBtn').addEventListener('click', function (e) { e.preventDefault(); doLogin(); });
+
+  function forceLogout(msg) { doLogout(msg || 'نشست شما منقضی شده است؛ لطفاً دوباره وارد شوید.'); }
+  function doLogout(msg) {
+    if (S.token) { try { google.script.run.lmsLogout(S.token); } catch (e) {} }
+    try { localStorage.removeItem(SKEY); } catch (e) {}
+    leaveFns.forEach(function (f) { try { f(); } catch (e) {} }); leaveFns = []; guard = null;
+    S = { token: '', role: '', user: null }; stack = []; rid++;
+    $('main').textContent = ''; $('topbar').textContent = '';
+    $('username').value = ''; $('password').value = '';
+    document.documentElement.className = 'no-session';
+    setLoginErr(msg || ''); window.scrollTo(0, 0);
+  }
+
+  /* ---------- ناوبری (دکمهٔ بازگشت گوشی هم کار می‌کند) ---------- */
+  function nav(name, p) { stack.push({ name: name, p: p || {} }); try { history.pushState({ d: stack.length }, ''); } catch (e) {} render(); }
+  function swap(name, p) { stack[stack.length - 1] = { name: name, p: p || {} }; render(); }
+  function back() { if (stack.length > 1) history.back(); }
+  window.addEventListener('popstate', function () {
+    if (!S.token) return;
+    if (guard && !guard()) { try { history.pushState({ d: stack.length }, ''); } catch (e) {} return; }
+    if (stack.length > 1) stack.pop();
+    render();
+  });
+
+  function setTop(o) {
+    var t = $('topbar'); t.textContent = '';
+    if (stack.length > 1) t.append(h('button', { class: 'ibtn', 'aria-label': 'بازگشت', onclick: back }, ic('back')));
+    else t.append(h('div', { class: 'avatar', text: (firstName(S.user && S.user.name) || '؟').charAt(0) }));
+    t.append(h('div', { class: 'ttl' }, h('b', { text: o.title || '' }), h('span', { text: o.sub || '' })));
+    (o.actions || []).forEach(function (a) { t.append(a); });
+    t.append(h('button', { class: 'ibtn', 'aria-label': 'تازه‌سازی', onclick: function () { render(); } }, ic('refresh')));
+    if (stack.length <= 1) t.append(h('button', { class: 'ibtn', 'aria-label': 'خروج', onclick: function () { ask('از حساب خود خارج می‌شوید؟', 'خروج').then(function (y) { if (y) doLogout(''); }); } }, ic('out')));
+  }
+
+  function render() {
+    var my = ++rid;
+    leaveFns.forEach(function (f) { try { f(); } catch (e) {} }); leaveFns = []; guard = null;
+    var cur = stack[stack.length - 1], v = VIEWS[cur.name];
+    var main = $('main'); main.textContent = '';
+    var box = h('div', { class: 'view' }); main.appendChild(box);
+    skeleton(box);
+    setTop({ title: '…' });
+    var X = { alive: function () { return my === rid; }, onLeave: function (f) { leaveFns.push(f); }, setGuard: function (f) { guard = f; }, reload: render };
+    window.scrollTo(0, 0);
+    Promise.resolve().then(function () { return v(box, cur.p || {}, X); }).catch(function (e) {
+      if (!X.alive()) return;
+      if (e && e.code === 'AUTH') return;
+      box.textContent = ''; box.append(errBox(e, render));
+    });
+  }
+
+  /* ---------- نمایش فایل ---------- */
+  function openFile(kind, id, name, type) {
+    toast('در حال دریافت فایل…');
+    return call('lmsGetFile', kind, id).then(function (r) {
+      var bytes = b64bytes(r.base64), t = String(r.type || type || '').toLowerCase();
+      if (t === 'html' || t === 'htm') nav('file', { title: name, html: new TextDecoder('utf-8').decode(bytes) });
+      else if (['png', 'jpg', 'jpeg', 'webp'].indexOf(t) >= 0) nav('file', { title: name, img: URL.createObjectURL(new Blob([bytes], { type: 'image/' + (t === 'jpg' ? 'jpeg' : t) })) });
+      else if (t === 'txt') nav('file', { title: name, text: new TextDecoder('utf-8').decode(bytes) });
+      else { downloadBlob(new Blob([bytes], { type: 'application/pdf' }), name || 'file.pdf'); toast('فایل دانلود شد.', 'ok'); }
+    }).catch(function (e) { if (!(e && e.code === 'AUTH')) toast(e.message || 'دریافت فایل ناموفق بود.', 'er'); });
+  }
+  VIEWS.file = function (box, p) {
+    setTop({ title: p.title || 'فایل', sub: '' });
+    box.textContent = '';
+    if (p.html != null) box.append(h('iframe', { sandbox: 'allow-scripts allow-forms allow-modals allow-popups', srcdoc: p.html, style: 'width:100%;height:calc(100vh - 110px);border:0;border-radius:16px;background:#fff;box-shadow:var(--sh)' }));
+    else if (p.img) box.append(h('div', { class: 'card', style: 'text-align:center' }, h('img', { src: p.img, style: 'max-width:100%;border-radius:12px' })));
+    else box.append(h('div', { class: 'card' }, h('div', { class: 'desc', text: p.text || '' })));
+  };
+  function fileBtn(kind, id, name, type, label) {
+    return h('button', { class: 'btn sm', type: 'button', onclick: function () { openFile(kind, id, name, type); } }, ic(type === 'html' || type === 'htm' ? 'eye' : 'down'), label || ((type === 'html' || type === 'htm') ? 'مشاهدهٔ فعالیت' : 'مشاهده/دریافت فایل'));
+  }
+  function fileTypeIcon(t) { t = String(t || '').toLowerCase(); return t === 'pdf' ? '📕' : (t === 'html' || t === 'htm') ? '🌐' : t === 'txt' ? '📄' : '🖼️'; }
+
+  /* ---------- گفتگو (مشترک) ---------- */
+  function chatPanel(wrap, X, courseId, studentCode, opts) {
+    opts = opts || {};
+    var list = h('div', { class: 'chat' }), ta = h('textarea', { rows: '1', placeholder: opts.placeholder || 'پیام خود را بنویسید…', maxlength: '1500' });
+    var send = h('button', { class: 'btn pri', type: 'button', 'aria-label': 'ارسال' }, ic('send'));
+    var last = '';
+    function draw(msgs) {
+      var sig = msgs.length + ':' + (msgs.length ? msgs[msgs.length - 1].id : '');
+      if (sig === last) return; last = sig;
+      var atBottom = (window.innerHeight + window.scrollY) >= document.body.scrollHeight - 160;
+      list.textContent = '';
+      if (!msgs.length) list.append(emptyBox('💬', opts.empty || 'هنوز پیامی نیست؛ اولین پیام را بفرستید.'));
+      msgs.forEach(function (m) {
+        list.append(h('div', { class: 'msg ' + (m.announce ? 'ann' : (m.mine ? 'me' : 'you')) },
+          m.announce ? h('b', { text: '📢 اطلاعیه · ' + m.senderName }) : null, m.announce ? h('br') : null,
+          m.text, h('small', { text: (m.announce ? '' : m.senderName + ' · ') + fmtDT(m.createdAt) })));
+      });
+      if (atBottom || list.dataset.first !== '1') { list.dataset.first = '1'; setTimeout(function () { window.scrollTo(0, document.body.scrollHeight); }, 30); }
+    }
+    function load() {
+      return call('lmsThread', courseId, studentCode).then(function (r) { if (X.alive()) { draw(r.messages); if (opts.onLoaded) opts.onLoaded(r); } }).catch(function () {});
+    }
+    function doSend() {
+      var txt = ta.value.trim(); if (!txt) return;
+      send.disabled = true;
+      call('lmsSend', courseId, txt, studentCode).then(function () { ta.value = ''; ta.style.height = ''; return load(); })
+        .catch(function (e) { toast(e.message || 'ارسال نشد.', 'er'); }).then(function () { send.disabled = false; ta.focus(); });
+    }
+    send.addEventListener('click', doSend);
+    ta.addEventListener('input', function () { ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 130) + 'px'; });
+    wrap.append(list, h('div', { class: 'composer' }, ta, send));
+    load();
+    var iv = setInterval(function () { if (!document.hidden) load(); }, 12000);
+    X.onLeave(function () { clearInterval(iv); });
+    return { reload: load };
+  }
+
+  /* ================= دانش‌آموز ================= */
+  VIEWS.s_home = function (box, p, X) {
+    setTop({ title: 'سلام ' + firstName(S.user.name), sub: 'کلاس ' + (S.user.classCode || '') });
+    return call('lmsStudentCourses').then(function (r) {
+      if (!X.alive()) return;
+      box.textContent = '';
+      var a = 0, e = 0, u = 0;
+      r.courses.forEach(function (c) { a += c.pendingActivities; e += c.openExams; u += c.unread; });
+      if (!r.courses.length) { box.append(emptyBox('🏫', 'هنوز معلمی برای کلاس شما، کلاس درس نساخته است.')); return; }
+      box.append(h('div', { class: 'pill-stats' },
+        h('div', { class: 'pstat' }, h('b', { class: 'c-pri', style: 'color:#6d28d9', text: fa(a) }), h('span', { text: 'فعالیت باز' })),
+        h('div', { class: 'pstat' }, h('b', { style: 'color:#d97706', text: fa(e) }), h('span', { text: 'آزمون پیش رو' })),
+        h('div', { class: 'pstat' }, h('b', { style: 'color:#dc2626', text: fa(u) }), h('span', { text: 'پیام جدید' }))));
+      box.append(h('div', { class: 'sec' }, h('h3', { text: 'کلاس‌های من' })));
+      var g = h('div', { class: 'grid' });
+      r.courses.forEach(function (c) {
+        var chips = h('div', { class: 'chips' });
+        if (c.pendingActivities) chips.append(h('span', { class: 'chip', text: fa(c.pendingActivities) + ' فعالیت' }));
+        if (c.openExams) chips.append(h('span', { class: 'chip', text: fa(c.openExams) + ' آزمون' }));
+        if (c.unread) chips.append(h('span', { class: 'chip hot', text: fa(c.unread) + ' پیام جدید' }));
+        g.append(h('button', { class: 'ctile', style: 'background:' + grad(c.lesson), onclick: function () { nav('s_course', { id: c.id, tab: 'act', lesson: c.lesson }); } },
+          h('div', { class: 'em', text: emoji(c.lesson) }), h('div', null, h('b', { text: c.lesson }), h('div', { class: 't2', text: 'دبیر: ' + (c.teacherName || '—') })), chips));
+      });
+      box.append(g);
+    });
+  };
+
+  var S_TABS = [['act', 'فعالیت‌ها', 'clip'], ['exam', 'آزمون‌ها', 'star'], ['grades', 'نمرات', 'chart'], ['chat', 'پیام‌ها', 'chat']];
+  VIEWS.s_course = function (box, p, X) {
+    setTop({ title: p.lesson || 'کلاس', sub: '' });
+    return call('lmsStudentCourse', p.id).then(function (r) {
+      if (!X.alive()) return;
+      var c = r.course, cur = stack[stack.length - 1];
+      setTop({ title: c.lesson, sub: 'دبیر: ' + (c.teacherName || '—') });
+      box.textContent = '';
+      var body = h('div'), tabsEl = h('div', { class: 'tabs' });
+      var pend = r.activities.filter(function (a) { return a.status === 'open' && !(a.sub && (a.sub.submitted || a.sub.graded)); }).length;
+      var badges = { act: pend, exam: r.exams.filter(function (e) { return e.state === 'available' || e.state === 'inprogress'; }).length };
+      function drawTabs() {
+        tabsEl.textContent = '';
+        S_TABS.forEach(function (t) {
+          tabsEl.append(h('button', { class: 'tab' + (cur.p.tab === t[0] ? ' on' : ''), onclick: function () { cur.p.tab = t[0]; drawTabs(); drawBody(); } }, ic(t[2]), t[1], badges[t[0]] ? h('span', { class: 'n', text: fa(badges[t[0]]) }) : null));
+        });
+      }
+      function drawBody() {
+        body.textContent = '';
+        leaveFns.forEach(function (f) { try { f(); } catch (e) {} }); leaveFns = [];
+        var t = cur.p.tab || 'act';
+        if (t === 'act') sActs(body, r, c); else if (t === 'exam') sExams(body, r, c); else if (t === 'grades') sGrades(body, r); else sChat(body, X, c);
+      }
+      box.append(h('div', { class: 'chead', style: 'background:' + grad(c.lesson) }, h('div', { class: 'em', text: emoji(c.lesson) }), h('div', null, h('b', { text: c.lesson }), h('span', { text: 'کلاس درس · ' + (c.teacherName || '') }))), tabsEl, body);
+      drawTabs(); drawBody();
+    });
+  };
+
+  function sActs(body, r, c) {
+    if (!r.activities.length) return body.append(emptyBox('📝', 'هنوز فعالیتی توسط معلم ثبت نشده است.'));
+    r.activities.forEach(function (a) {
+      var st, cls;
+      if (a.sub && a.sub.graded) { st = 'نمره: ' + num(a.sub.score) + ' از ' + num(a.maxScore); cls = 'b-good'; }
+      else if (a.sub && a.sub.submitted) { st = 'تحویل شد'; cls = 'b-info'; }
+      else if (a.status !== 'open') { st = 'بسته شد'; cls = 'b-gray'; }
+      else if (a.overdue) { st = 'مهلت گذشته'; cls = 'b-bad'; }
+      else { st = 'تحویل نشده'; cls = 'b-warn'; }
+      body.append(h('button', { class: 'item', onclick: function () { nav('s_activity', { courseId: c.id, id: a.id }); } },
+        h('div', { class: 'em em-pri', text: a.hasFile ? fileTypeIcon(a.fileType) : '📝' }),
+        h('div', { class: 'grow' }, h('div', { class: 'title', text: a.title }), h('div', { class: 'sub', text: a.dueDate ? 'مهلت: ' + fmtDay(a.dueDate) : 'بدون مهلت' })),
+        badge(cls, st)));
+    });
+  }
+
+  function sExams(body, r, c) {
+    if (!r.exams.length) return body.append(emptyBox('🧪', 'آزمونی برای شما منتشر نشده است.'));
+    r.exams.forEach(function (e) {
+      var meta = [e.kind === 'quiz' ? 'آنلاین · ' + fa(e.qCount) + ' سؤال' : 'لینک آزمون'];
+      if (e.durationMin) meta.push(fa(e.durationMin) + ' دقیقه');
+      if (e.endAt) meta.push('تا ' + fmtDT(e.endAt));
+      var right;
+      if (e.state === 'done') right = e.result ? scoreEl(e.result.score, e.result.maxScore) : badge('b-good', 'انجام شد');
+      else if (e.state === 'upcoming') right = badge('b-gray', 'شروع: ' + fmtDT(e.startAt));
+      else if (e.state === 'ended') right = badge('b-bad', 'پایان یافته');
+      else if (e.kind === 'link') right = h('a', { class: 'btn sm pri', href: e.link, target: '_blank', rel: 'noopener', text: 'ورود به آزمون' });
+      else right = h('button', { class: 'btn sm pri', text: e.state === 'inprogress' ? 'ادامهٔ آزمون' : 'شروع آزمون', onclick: function () { nav('s_exam', { exam: e, courseId: c.id }); } });
+      body.append(h('div', { class: 'item' }, h('div', { class: 'em em-warn', text: e.kind === 'quiz' ? '📝' : '🔗' }),
+        h('div', { class: 'grow' }, h('div', { class: 'title', text: e.title }), h('div', { class: 'sub', text: meta.join(' · ') })), right));
+    });
+  }
+
+  function sGrades(body, r) {
+    if (!r.items.length) return body.append(emptyBox('📊', 'هنوز نمره‌ای برای شما ثبت نشده است.'));
+    var avg = r.avg20;
+    body.append(h('div', { class: 'card' }, h('div', { class: 'row' }, h('div', { class: 'grow' }, h('div', { class: 'sub', text: 'میانگین نمرات این درس (از ۲۰)' }), h('div', { style: 'font-size:2rem;font-weight:900;color:' + (avg >= 10 ? '#059669' : '#dc2626'), text: num(avg) })),
+      h('div', { class: 'sub', text: fa(r.items.length) + ' مورد' })), h('div', { class: 'bar', style: 'margin-top:8px' }, h('i', { style: 'width:' + Math.min(100, (avg || 0) * 5) + '%' }))));
+    var kinds = { activity: ['فعالیت', 'em-pri', '📝'], exam: ['آزمون', 'em-warn', '🧪'], grade: ['نمرهٔ کلاسی', 'em-good', '⭐'] };
+    r.items.forEach(function (it) {
+      var k = kinds[it.kind] || kinds.grade;
+      body.append(h('div', { class: 'item' }, h('div', { class: 'em ' + k[1], text: k[2] }),
+        h('div', { class: 'grow' }, h('div', { class: 'title', text: it.title }), h('div', { class: 'sub', text: (it.type || k[0]) + (it.date ? ' · ' + fmtDay(it.date) : '') })), scoreEl(it.score, it.max)));
+    });
+  }
+
+  function sChat(body, X, c) {
+    body.append(h('div', { class: 'note in', text: 'پیام شما مستقیم برای ' + (c.teacherName || 'معلم') + ' ارسال می‌شود. اطلاعیه‌های کلاس هم همین‌جا دیده می‌شوند.' }));
+    var wrap = h('div'); body.append(wrap);
+    chatPanel(wrap, X, c.id, null, { placeholder: 'پیام برای معلم…' });
+  }
+
+  VIEWS.s_activity = function (box, p, X) {
+    setTop({ title: 'فعالیت', sub: '' });
+    return call('lmsStudentCourse', p.courseId).then(function (r) {
+      if (!X.alive()) return;
+      var a = r.activities.filter(function (x) { return x.id === p.id; })[0];
+      if (!a) throw new Error('فعالیت یافت نشد.');
+      setTop({ title: a.title, sub: r.course.lesson });
+      box.textContent = '';
+      var meta = h('div', { class: 'row', style: 'flex-wrap:wrap;gap:6px;margin-bottom:8px' },
+        badge('b-pri', 'بارم: ' + num(a.maxScore)), a.dueDate ? badge(a.overdue ? 'b-bad' : 'b-info', 'مهلت: ' + fmtDay(a.dueDate)) : null, a.status !== 'open' ? badge('b-gray', 'بسته شده') : null);
+      box.append(h('div', { class: 'card' }, meta, a.desc ? h('div', { class: 'desc', text: a.desc }) : h('div', { class: 'sub', text: 'توضیحی ثبت نشده است.' }),
+        a.hasFile ? h('div', { class: 'filebox', style: 'margin-top:10px' }, h('span', { text: fileTypeIcon(a.fileType) }), h('div', { class: 'grow sub', text: a.fileName }), fileBtn('activity', a.id, a.fileName, a.fileType)) : null));
+      var s = a.sub;
+      if (s && s.graded) {
+        box.append(h('div', { class: 'card result-big' }, h('div', { class: 'sub', text: 'نمرهٔ شما' }), h('div', { class: 'n', text: num(s.score) + ' / ' + num(a.maxScore) }),
+          s.feedback ? h('div', { class: 'note in', text: '💬 ' + s.feedback }) : null));
+      }
+      if (s && s.submitted) {
+        box.append(h('div', { class: 'card' }, h('h3', { text: 'پاسخ ارسال‌شدهٔ شما' }), h('div', { class: 'sub', text: fmtDT(s.submittedAt) }),
+          s.text ? h('div', { class: 'desc', style: 'margin-top:6px', text: s.text }) : null,
+          s.hasFile ? h('div', { class: 'filebox', style: 'margin-top:8px' }, h('span', { text: fileTypeIcon(s.fileType) }), h('div', { class: 'grow sub', text: s.fileName }), fileBtn('submission', s.id, s.fileName, s.fileType)) : null));
+      }
+      if (s && s.graded) return;
+      if (a.status !== 'open') { box.append(h('div', { class: 'note wr', text: 'مهلت این فعالیت بسته شده و دیگر پاسخی ثبت نمی‌شود.' })); return; }
+      var ta = h('textarea', { class: 'inp', placeholder: 'پاسخ یا توضیحات خود را بنویسید…', maxlength: '4000', value: s ? s.text : '' });
+      var fi = h('input', { type: 'file', accept: '.pdf,.html,.htm,.png,.jpg,.jpeg,.webp,.txt' });
+      var btn = h('button', { class: 'btn pri block', text: s && s.submitted ? 'ویرایش و ارسال مجدد' : 'ارسال پاسخ' });
+      btn.addEventListener('click', function () {
+        busy(btn, true, 'در حال ارسال…');
+        readFile(fi).then(function (f) { return call('lmsSubmitActivity', a.id, ta.value, f); }).then(function () {
+          toast('پاسخ شما ثبت شد ✅', 'ok'); if (X.alive()) swap('s_activity', p);
+        }).catch(function (e) { busy(btn, false); toast(e.message || 'ارسال نشد.', 'er'); });
+      });
+      box.append(h('div', { class: 'card' }, h('h3', { text: s && s.submitted ? 'ویرایش پاسخ' : 'پاسخ شما' }),
+        h('div', { class: 'field' }, ta),
+        h('div', { class: 'field' }, h('label', { class: 'lbl', text: 'فایل پاسخ (اختیاری: PDF، HTML، تصویر · حداکثر ۸ مگابایت)' }), fi), btn));
+    });
+  };
+
+  VIEWS.s_exam = function (box, p, X) {
+    var e0 = p.exam;
+    setTop({ title: e0.title, sub: 'آزمون آنلاین' });
+    box.textContent = '';
+    var done = false;
+    box.append(h('div', { class: 'card' }, h('h3', { text: e0.title }),
+      h('div', { class: 'row', style: 'flex-wrap:wrap;gap:6px;margin:6px 0 10px' }, badge('b-pri', fa(e0.qCount) + ' سؤال'), e0.durationMin ? badge('b-warn', fa(e0.durationMin) + ' دقیقه') : badge('b-gray', 'بدون محدودیت زمان'), badge('b-info', 'بارم: ' + num(e0.maxScore))),
+      h('div', { class: 'note wr', text: e0.state === 'inprogress' ? 'شما این آزمون را شروع کرده‌اید؛ زمان در حال گذر است.' : 'فقط یک‌بار می‌توانید در این آزمون شرکت کنید. بعد از زدن «شروع»، زمان شروع می‌شود و با بستن برنامه متوقف نمی‌شود.' }),
+      h('button', { class: 'btn pri block', style: 'margin-top:12px', text: e0.state === 'inprogress' ? 'ادامهٔ آزمون' : 'شروع آزمون', onclick: function () { startExam(this); } })));
+
+    function startExam(btn) {
+      busy(btn, true, 'در حال آماده‌سازی…');
+      call('lmsStartExam', e0.id).then(function (r) { if (X.alive()) runExam(r); }).catch(function (e) { busy(btn, false); toast(e.message || 'آزمون شروع نشد.', 'er'); });
+    }
+
+    function runExam(r) {
+      var key = 'lms_ex_' + e0.id, ans = [];
+      try { ans = JSON.parse(sessionStorage.getItem(key) || '[]'); } catch (x) {}
+      r.questions.forEach(function (q, i) { if (ans[i] == null) ans[i] = -1; });
+      var deadline = r.remainingSec == null ? null : Date.now() + r.remainingSec * 1000, submitting = false, iv = null;
+      box.textContent = '';
+      setTop({ title: e0.title, sub: 'در حال برگزاری' });
+      var timerEl = h('div', { class: 'timer' }, ic('clock'), h('div', { class: 'grow sub', text: deadline ? 'زمان باقی‌مانده' : 'بدون محدودیت زمان' }), h('b', { text: deadline ? '' : '∞' }));
+      var prog = h('div', { class: 'sub', style: 'text-align:center;margin:-4px 0 10px' });
+      box.append(timerEl, prog);
+      var qwrap = h('div'); box.append(qwrap);
+      var submitBtn = h('button', { class: 'btn good block', text: 'پایان و ارسال پاسخ‌ها' });
+      box.append(submitBtn);
+      function save() { try { sessionStorage.setItem(key, JSON.stringify(ans)); } catch (x) {} }
+      function upd() { var n = ans.filter(function (a) { return a >= 0; }).length; prog.textContent = 'پاسخ داده‌شده: ' + fa(n) + ' از ' + fa(r.questions.length); }
+      r.questions.forEach(function (q, i) {
+        var opts = h('div');
+        q.options.forEach(function (o, j) {
+          var b = h('button', { type: 'button', class: 'opt' + (ans[i] === j ? ' on' : '') }, h('span', { class: 'rd', text: ans[i] === j ? '✓' : '' }), h('span', { text: o }));
+          b.addEventListener('click', function () {
+            ans[i] = ans[i] === j ? -1 : j; save(); upd();
+            Array.prototype.forEach.call(opts.children, function (x, k) { x.classList.toggle('on', ans[i] === k); x.firstChild.textContent = ans[i] === k ? '✓' : ''; });
+          });
+          opts.append(b);
+        });
+        qwrap.append(h('div', { class: 'qcard' }, h('div', { class: 'qt', text: fa(i + 1) + '. ' + q.q }), h('div', { class: 'sub', style: 'margin:-6px 0 8px', text: 'بارم: ' + num(q.points) }), opts));
+      });
+      upd();
+      X.setGuard(function () { return done || window.confirm('آزمون در حال برگزاری است و زمان ادامه دارد. خارج می‌شوید؟'); });
+      function tick() {
+        if (!deadline) return;
+        var left = Math.max(0, Math.round((deadline - Date.now()) / 1000));
+        timerEl.querySelector('b').textContent = fa(String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0'));
+        timerEl.classList.toggle('low', left <= 60);
+        if (left <= 0 && !submitting) { toast('زمان آزمون تمام شد؛ پاسخ‌ها ارسال می‌شود.'); finish(true); }
+      }
+      if (deadline) { iv = setInterval(tick, 1000); tick(); X.onLeave(function () { clearInterval(iv); }); }
+      function finish(auto) {
+        if (submitting) return; submitting = true; busy(submitBtn, true, 'در حال ارسال…');
+        call('lmsSubmitExam', e0.id, ans).then(function (res) { done = true; if (iv) clearInterval(iv); try { sessionStorage.removeItem(key); } catch (x) {} if (X.alive()) showResult(res, r); })
+          .catch(function (e) { submitting = false; busy(submitBtn, false); toast(e.message || 'ارسال نشد؛ دوباره تلاش کنید.', 'er'); });
+      }
+      submitBtn.addEventListener('click', function () {
+        var un = ans.filter(function (a) { return a < 0; }).length;
+        ask(un ? fa(un) + ' سؤال بی‌پاسخ مانده است. ارسال شود؟' : 'پاسخ‌ها نهایی و ارسال شود؟', 'ارسال').then(function (y) { if (y) finish(false); });
+      });
+    }
+
+    function showResult(res, r) {
+      box.textContent = ''; setTop({ title: e0.title, sub: 'نتیجه' });
+      box.append(h('div', { class: 'card result-big' }, h('div', { class: 'sub', text: 'نمرهٔ شما' }), h('div', { class: 'n', text: num(res.score) + ' / ' + num(res.maxScore) }),
+        res.late ? h('div', { class: 'note wr', text: 'ارسال شما بعد از پایان زمان انجام شد؛ ممکن است معلم نمره را بازبینی کند.' }) : h('div', { class: 'note ok', text: 'پاسخ‌های شما با موفقیت ثبت شد.' })));
+      if (res.review) {
+        box.append(h('div', { class: 'sec' }, h('h3', { text: 'مرور پاسخ‌ها' })));
+        r.questions.forEach(function (q, i) {
+          var rv = res.review[i];
+          box.append(h('div', { class: 'qcard' }, h('div', { class: 'qt', text: fa(i + 1) + '. ' + q.q }), q.options.map(function (o, j) {
+            var cls = 'opt'; if (rv.right === j) cls += ' right'; else if (rv.answer === j) cls += ' wrong';
+            return h('div', { class: cls }, h('span', { class: 'rd', style: rv.right === j ? 'background:#10b981;border-color:#10b981' : (rv.answer === j ? 'background:#ef4444;border-color:#ef4444' : ''), text: rv.right === j ? '✓' : (rv.answer === j ? '✗' : '') }), h('span', { text: o }));
+          })));
+        });
+      }
+      box.append(h('button', { class: 'btn pri block', text: 'بازگشت به کلاس', onclick: back }));
+    }
+  };
+
+  /* ================= معلم ================= */
+  function sectionHead(title, btn) { return h('div', { class: 'sec' }, h('h3', { text: title }), btn || null); }
+  function inp(attrs) { return h('input', Object.assign({ class: 'inp' }, attrs)); }
+  function field(label, el) { return h('div', { class: 'field' }, h('label', { text: label }), el); }
+  function toLocalInput(iso) {
+    if (!iso) return '';
+    var d = new Date(iso); if (isNaN(d)) return '';
+    var p = function (n) { return String(n).padStart(2, '0'); };
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+  function fromLocalInput(v) { return v ? new Date(v).toISOString() : ''; }
+  function nz(v) { v = String(v == null ? '' : v).trim(); return v; }
+
+  VIEWS.t_home = function (box, p, X) {
+    setTop({ title: 'سلام ' + firstName(S.user.name), sub: 'پنل دبیر' });
+    return call('lmsTeacherCourses').then(function (r) {
+      if (!X.alive()) return;
+      box.textContent = '';
+      var active = r.courses.filter(function (c) { return c.status === 'active'; }), arch = r.courses.filter(function (c) { return c.status !== 'active'; });
+      box.append(h('div', { class: 'pill-stats' },
+        h('div', { class: 'pstat' }, h('b', { style: 'color:#6d28d9', text: fa(active.length) }), h('span', { text: 'کلاس فعال' })),
+        h('div', { class: 'pstat' }, h('b', { style: 'color:#d97706', text: fa(r.totals.toGrade) }), h('span', { text: 'منتظر نمره' })),
+        h('div', { class: 'pstat' }, h('b', { style: 'color:#dc2626', text: fa(r.totals.unread) }), h('span', { text: 'پیام جدید' }))));
+      box.append(sectionHead('کلاس‌های من', h('button', { class: 'btn sm pri', onclick: function () { nav('t_newcourse'); } }, ic('plus'), 'کلاس جدید')));
+      if (!active.length) box.append(emptyBox('🏫', 'هنوز کلاسی نساخته‌اید. با «کلاس جدید» شروع کنید.'));
+      var g = h('div', { class: 'grid' });
+      function tile(c) {
+        var chips = h('div', { class: 'chips' }, h('span', { class: 'chip', text: fa(c.students) + ' دانش‌آموز' }));
+        if (c.toGrade) chips.append(h('span', { class: 'chip hot', text: fa(c.toGrade) + ' منتظر نمره' }));
+        if (c.unread) chips.append(h('span', { class: 'chip hot', text: fa(c.unread) + ' پیام' }));
+        return h('button', { class: 'ctile', style: 'background:' + (c.status === 'active' ? grad(c.lesson) : 'linear-gradient(135deg,#9ca3af,#6b7280)'), onclick: function () { nav('t_course', { id: c.id, tab: 'act' }); } },
+          h('div', { class: 'em', text: emoji(c.lesson) }), h('div', null, h('b', { text: c.lesson }), h('div', { class: 't2', text: 'کلاس ' + c.classCode + ' · ' + fa(c.activities) + ' فعالیت · ' + fa(c.exams) + ' آزمون' })), chips);
+      }
+      active.forEach(function (c) { g.append(tile(c)); }); box.append(g);
+      if (arch.length) {
+        box.append(sectionHead('بایگانی'));
+        var g2 = h('div', { class: 'grid' }); arch.forEach(function (c) { g2.append(tile(c)); }); box.append(g2);
+      }
+    });
+  };
+
+  VIEWS.t_newcourse = function (box, p, X) {
+    setTop({ title: 'کلاس درس جدید', sub: '' });
+    return call('lmsTeacherOptions').then(function (r) {
+      if (!X.alive()) return;
+      box.textContent = '';
+      if (!r.classes.length) return box.append(emptyBox('🏫', 'کلاسی در فهرست دانش‌آموزان مدرسه پیدا نشد.'));
+      var sel = h('select', { class: 'inp' }, r.classes.map(function (c) { return h('option', { value: c.classCode, text: c.classCode + ' (' + fa(c.students) + ' نفر)' }); }));
+      var les = inp({ placeholder: 'مثلاً: ریاضی', list: 'lessonList', maxlength: '80' }), dl = h('datalist', { id: 'lessonList' });
+      function fill() { dl.textContent = ''; var c = r.classes.filter(function (x) { return x.classCode === sel.value; })[0]; (c ? c.lessons : []).forEach(function (l) { dl.append(h('option', { value: l })); }); }
+      sel.addEventListener('change', fill); fill();
+      var btn = h('button', { class: 'btn pri block', text: 'ساخت کلاس' });
+      btn.addEventListener('click', function () {
+        busy(btn, true);
+        call('lmsCreateCourse', sel.value, les.value).then(function (res) { toast('کلاس ساخته شد ✅', 'ok'); history.back(); setTimeout(function () { nav('t_course', { id: res.id, tab: 'act' }); }, 50); })
+          .catch(function (e) { busy(btn, false); toast(e.message, 'er'); });
+      });
+      box.append(h('div', { class: 'card' }, field('کلاس', sel), field('نام درس', les), dl, btn,
+        h('div', { class: 'note in', style: 'margin-top:10px', text: 'پیشنهاد نام درس‌ها از شیت «پیکربندی» مدرسه خوانده می‌شود؛ می‌توانید نام دلخواه هم بنویسید.' })));
+    });
+  };
+
+  var T_TABS = [['act', 'فعالیت‌ها', 'clip'], ['exam', 'آزمون‌ها', 'star'], ['grades', 'دفتر نمرات', 'chart'], ['chat', 'پیام‌ها', 'chat']];
+  VIEWS.t_course = function (box, p, X) {
+    return call('lmsCourseOverview', p.id).then(function (r) {
+      if (!X.alive()) return;
+      var c = r.course, cur = stack[stack.length - 1];
+      var arch = h('button', { class: 'ibtn', 'aria-label': 'بایگانی', onclick: function () {
+        var to = c.status === 'active' ? 'archived' : 'active';
+        ask(to === 'archived' ? 'این کلاس بایگانی شود؟ دانش‌آموزان دیگر آن را نمی‌بینند.' : 'کلاس دوباره فعال شود؟', 'تأیید').then(function (y) { if (y) call('lmsSetCourseStatus', c.id, to).then(function () { toast('انجام شد', 'ok'); render(); }).catch(function (e) { toast(e.message, 'er'); }); });
+      } }, ic(c.status === 'active' ? 'down' : 'up'));
+      setTop({ title: c.lesson, sub: 'کلاس ' + c.classCode, actions: [arch] });
+      box.textContent = '';
+      var badges = { act: r.toGrade, chat: r.unread }, tabsEl = h('div', { class: 'tabs' }), body = h('div');
+      function drawTabs() {
+        tabsEl.textContent = '';
+        T_TABS.forEach(function (t) {
+          tabsEl.append(h('button', { class: 'tab' + (cur.p.tab === t[0] ? ' on' : ''), onclick: function () { cur.p.tab = t[0]; drawTabs(); drawBody(); } }, ic(t[2]), t[1], badges[t[0]] ? h('span', { class: 'n', text: fa(badges[t[0]]) }) : null));
+        });
+      }
+      function drawBody() {
+        body.textContent = ''; leaveFns.forEach(function (f) { try { f(); } catch (e) {} }); leaveFns = [];
+        var t = cur.p.tab || 'act';
+        if (t === 'act') tActs(body, r); else if (t === 'exam') tExams(body, r); else if (t === 'grades') tGradebook(body, r, X); else tInbox(body, r, X);
+      }
+      box.append(h('div', { class: 'chead', style: 'background:' + grad(c.lesson) }, h('div', { class: 'em', text: emoji(c.lesson) }), h('div', null, h('b', { text: c.lesson }), h('span', { text: 'کلاس ' + c.classCode + ' · ' + fa(r.students.length) + ' دانش‌آموز' }))), tabsEl, body);
+      drawTabs(); drawBody();
+    });
+  };
+
+  function tActs(body, r) {
+    var c = r.course;
+    body.append(h('button', { class: 'btn pri block', style: 'margin-bottom:12px', onclick: function () { nav('t_act_form', { courseId: c.id }); } }, ic('plus'), 'فعالیت جدید'));
+    if (!r.activities.length) return body.append(emptyBox('📝', 'هنوز فعالیتی ثبت نکرده‌اید.'));
+    r.activities.forEach(function (a) {
+      var wait = a.submitted - a.graded;
+      body.append(h('button', { class: 'item', onclick: function () { nav('t_subs', { id: a.id }); } },
+        h('div', { class: 'em em-pri', text: a.hasFile ? fileTypeIcon(a.fileType) : '📝' }),
+        h('div', { class: 'grow' }, h('div', { class: 'title', text: a.title }),
+          h('div', { class: 'sub', text: fa(a.submitted) + ' از ' + fa(r.students.length) + ' تحویل · ' + fa(a.graded) + ' نمره‌دار' + (a.dueDate ? ' · مهلت ' + fmtDay(a.dueDate) : '') })),
+        wait > 0 ? badge('b-warn', fa(wait) + ' منتظر نمره') : (a.status === 'closed' ? badge('b-gray', 'بسته') : badge('b-good', 'باز'))));
+    });
+  }
+  function tExams(body, r) {
+    var c = r.course;
+    body.append(h('button', { class: 'btn pri block', style: 'margin-bottom:12px', onclick: function () { nav('t_exam_form', { courseId: c.id }); } }, ic('plus'), 'آزمون جدید'));
+    if (!r.exams.length) return body.append(emptyBox('🧪', 'هنوز آزمونی ثبت نکرده‌اید.'));
+    r.exams.forEach(function (e) {
+      body.append(h('button', { class: 'item', onclick: function () { nav('t_exam_results', { id: e.id, courseId: c.id }); } },
+        h('div', { class: 'em em-warn', text: e.kind === 'quiz' ? '📝' : '🔗' }),
+        h('div', { class: 'grow' }, h('div', { class: 'title', text: e.title }), h('div', { class: 'sub', text: (e.kind === 'quiz' ? 'آنلاین · ' + fa(e.qCount) + ' سؤال' : 'لینک خارجی') + ' · ' + fa(e.taken) + ' نتیجه' })),
+        e.status === 'published' ? badge('b-good', 'منتشر شده') : badge('b-gray', 'پیش‌نویس')));
+    });
+  }
+
+  /* ----- فرم فعالیت ----- */
+  VIEWS.t_act_form = function (box, p, X) {
+    var a = p.a || {};
+    setTop({ title: a.id ? 'ویرایش فعالیت' : 'فعالیت جدید', sub: '' });
+    box.textContent = '';
+    var title = inp({ value: a.title || '', maxlength: '150', placeholder: 'عنوان فعالیت' });
+    var desc = h('textarea', { class: 'inp', maxlength: '3000', placeholder: 'توضیحات و دستورالعمل برای دانش‌آموزان…', value: a.desc || '' });
+    var due = inp({ type: 'date', value: a.dueDate || '' }), max = inp({ type: 'number', inputmode: 'decimal', value: a.maxScore || 20, min: '1' });
+    var fi = h('input', { type: 'file', accept: '.pdf,.html,.htm,.png,.jpg,.jpeg,.webp,.txt' });
+    var closed = h('input', { type: 'checkbox', checked: a.status === 'closed' }), rm = h('input', { type: 'checkbox' });
+    var dirty = false; box.addEventListener('input', function () { dirty = true; });
+    X.setGuard(function () { return !dirty || window.confirm('تغییرات ذخیره نشده از بین می‌رود. خارج می‌شوید؟'); });
+    var btn = h('button', { class: 'btn pri block', text: 'ذخیره' });
+    btn.addEventListener('click', function () {
+      busy(btn, true, 'در حال ذخیره…');
+      readFile(fi).then(function (f) {
+        return call('lmsSaveActivity', { id: a.id, courseId: p.courseId, title: title.value, desc: desc.value, dueDate: due.value, maxScore: max.value, status: closed.checked ? 'closed' : 'open', file: f, removeFile: rm.checked });
+      }).then(function () { dirty = false; toast('ذخیره شد ✅', 'ok'); history.back(); }).catch(function (e) { busy(btn, false); toast(e.message, 'er'); });
+    });
+    box.append(h('div', { class: 'card' }, field('عنوان', title), field('توضیحات', desc),
+      h('div', { class: 'two' }, field('مهلت تحویل', due), field('بارم', max)),
+      field('فایل فعالیت (PDF یا HTML تعاملی یا تصویر · حداکثر ۸ مگابایت)', fi),
+      a.hasFile ? h('label', { class: 'sw', style: 'margin-bottom:10px' }, rm, 'حذف فایل فعلی (' + (a.fileName || '') + ')') : null,
+      h('label', { class: 'sw', style: 'margin-bottom:14px' }, closed, 'بستن فعالیت (دانش‌آموزان دیگر نمی‌توانند ارسال کنند)'), btn,
+      a.id ? h('button', { class: 'btn bad block', style: 'margin-top:8px', text: 'حذف فعالیت', onclick: function () {
+        ask('فعالیت و همهٔ پاسخ‌ها و نمره‌های آن حذف شود؟', 'حذف', true).then(function (y) { if (y) call('lmsDeleteActivity', a.id).then(function () { dirty = false; toast('حذف شد', 'ok'); history.go(-2); }).catch(function (e) { toast(e.message, 'er'); }); });
+      } }) : null));
+  };
+
+  /* ----- تحویل‌ها و نمره‌دهی فعالیت ----- */
+  VIEWS.t_subs = function (box, p, X) {
+    return call('lmsListSubmissions', p.id).then(function (r) {
+      if (!X.alive()) return;
+      var a = r.activity;
+      setTop({ title: a.title, sub: 'تحویل‌ها', actions: [h('button', { class: 'ibtn', 'aria-label': 'ویرایش', onclick: function () {
+        var prev = stack[stack.length - 2], cid = prev && prev.p && prev.p.id;
+        call('lmsCourseOverview', cid).then(function (o) { var f = o.activities.filter(function (x) { return x.id === p.id; })[0]; nav('t_act_form', { courseId: cid, a: f }); }).catch(function (e) { toast(e.message, 'er'); });
+      } }, ic('edit'))] });
+      box.textContent = '';
+      box.append(h('div', { class: 'card' }, h('div', { class: 'row', style: 'flex-wrap:wrap;gap:6px' }, badge('b-pri', 'بارم: ' + num(a.maxScore)), a.dueDate ? badge('b-info', 'مهلت: ' + fmtDay(a.dueDate)) : null, a.status === 'closed' ? badge('b-gray', 'بسته') : badge('b-good', 'باز')),
+        a.desc ? h('div', { class: 'desc', style: 'margin-top:8px', text: a.desc }) : null,
+        a.hasFile ? h('div', { class: 'filebox', style: 'margin-top:8px' }, h('span', { text: fileTypeIcon(a.fileType) }), h('div', { class: 'grow sub', text: a.fileName }), fileBtn('activity', a.id, a.fileName, a.fileType)) : null));
+      var cnt = { graded: 0, submitted: 0, none: 0 }; r.rows.forEach(function (x) { cnt[x.status]++; });
+      box.append(h('div', { class: 'pill-stats' }, h('div', { class: 'pstat' }, h('b', { style: 'color:#059669', text: fa(cnt.graded) }), h('span', { text: 'نمره داده شد' })),
+        h('div', { class: 'pstat' }, h('b', { style: 'color:#d97706', text: fa(cnt.submitted) }), h('span', { text: 'منتظر نمره' })), h('div', { class: 'pstat' }, h('b', { style: 'color:#6b7280', text: fa(cnt.none) }), h('span', { text: 'تحویل نداده' }))));
+      var order = { submitted: 0, graded: 1, none: 2 };
+      r.rows.slice().sort(function (x, y) { return order[x.status] - order[y.status]; }).forEach(function (x) {
+        var right = x.status === 'graded' ? scoreEl(x.sub.score, a.maxScore) : x.status === 'submitted' ? badge('b-warn', 'نمره بدهید') : badge('b-gray', 'تحویل نداده');
+        box.append(h('button', { class: 'item', onclick: function () { nav('t_grade', { id: a.id, studentCode: x.studentCode }); } },
+          h('div', { class: 'avatar sm', text: x.name.charAt(0) }), h('div', { class: 'grow' }, h('div', { class: 'title', text: x.name }),
+            h('div', { class: 'sub', text: x.sub && x.sub.submittedAt ? 'تحویل: ' + fmtDT(x.sub.submittedAt) + (x.late ? ' · با تأخیر' : '') : '—' })), right));
+      });
+    });
+  };
+  VIEWS.t_grade = function (box, p, X) {
+    return call('lmsListSubmissions', p.id).then(function (r) {
+      if (!X.alive()) return;
+      var a = r.activity, row = r.rows.filter(function (x) { return x.studentCode === p.studentCode; })[0];
+      if (!row) throw new Error('دانش‌آموز یافت نشد.');
+      var s = row.sub;
+      setTop({ title: row.name, sub: a.title });
+      box.textContent = '';
+      if (!s || !s.submittedAt) box.append(h('div', { class: 'note wr', text: 'این دانش‌آموز هنوز پاسخی تحویل نداده است؛ در صورت نیاز می‌توانید مستقیم نمره ثبت کنید.' }));
+      else box.append(h('div', { class: 'card' }, h('h3', { text: 'پاسخ دانش‌آموز' }), h('div', { class: 'sub', text: fmtDT(s.submittedAt) + (row.late ? ' · با تأخیر' : '') }),
+        s.text ? h('div', { class: 'desc', style: 'margin-top:8px', text: s.text }) : h('div', { class: 'sub', style: 'margin-top:8px', text: 'متنی ارسال نشده است.' }),
+        s.hasFile ? h('div', { class: 'filebox', style: 'margin-top:8px' }, h('span', { text: fileTypeIcon(s.fileType) }), h('div', { class: 'grow sub', text: s.fileName }), fileBtn('submission', s.id, s.fileName, s.fileType)) : null));
+      var sc = inp({ type: 'number', inputmode: 'decimal', min: '0', max: String(a.maxScore), step: 'any', value: s && s.score != null ? s.score : '', placeholder: '۰ تا ' + a.maxScore });
+      var fb = h('textarea', { class: 'inp', maxlength: '1500', placeholder: 'بازخورد برای دانش‌آموز (اختیاری)', value: s ? s.feedback : '' });
+      var btn = h('button', { class: 'btn good block', text: 'ثبت نمره' });
+      btn.addEventListener('click', function () {
+        busy(btn, true);
+        call('lmsGradeSubmission', a.id, row.studentCode, sc.value, fb.value).then(function () { toast('نمره ثبت شد ✅', 'ok'); history.back(); }).catch(function (e) { busy(btn, false); toast(e.message, 'er'); });
+      });
+      box.append(h('div', { class: 'card' }, h('h3', { text: 'نمره (از ' + num(a.maxScore) + ')' }), field('نمره', sc), field('بازخورد', fb), btn));
+    });
+  };
+
+  /* ----- فرم آزمون ----- */
+  function parseQuick(text) {
+    // قالب: هر سؤال با یک خط، گزینه‌ها خطوط بعدی؛ گزینهٔ درست با * یا ✓ در ابتدا
+    var qs = [], cur = null;
+    String(text).split(/\r?\n/).forEach(function (line) {
+      line = line.trim(); if (!line) { return; }
+      var m = line.match(/^([*✓✔]\s*)?(?:(?:الف|ب|ج|د|[A-Da-d1-4۱-۴])[\)\.\-:]|[-•])\s*(.+)$/);
+      if (m && cur) { cur.options.push(m[2].trim()); if (m[1]) cur.correct = cur.options.length - 1; }
+      else { cur = { q: line.replace(/^\d+[\)\.\-:]\s*/, ''), options: [], correct: -1, points: 1 }; qs.push(cur); }
+    });
+    return qs.filter(function (q) { return q.options.length >= 2; });
+  }
+
+  /* ----- ورود گروهی سؤالات از فایل (txt / csv / docx) ----- */
+  function stripBom(s) { return String(s).replace(/^﻿/, ''); }
+  function parseCsv(text) {
+    text = stripBom(text);
+    var first = text.split(/\r?\n/)[0] || '', d = (first.split('\t').length > 1) ? '\t' : (first.split(';').length > first.split(',').length ? ';' : ',');
+    var rows = [], row = [], cell = '', inQ = false;
+    for (var i = 0; i < text.length; i++) {
+      var ch = text[i];
+      if (inQ) { if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else inQ = false; } else cell += ch; }
+      else if (ch === '"') inQ = true;
+      else if (ch === d) { row.push(cell); cell = ''; }
+      else if (ch === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
+      else if (ch !== '\r') cell += ch;
+    }
+    if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+    var out = [];
+    rows.forEach(function (r, idx) {
+      r = r.map(function (x) { return String(x).trim(); });
+      if (!r[0] || (idx === 0 && /سؤال|سوال|question/i.test(r[0]))) return;
+      var opts = r.slice(1, 7).filter(function (x) { return x; });
+      var c = String(r[5] == null ? '' : r[5]).trim(), ci = -1;
+      var map = { 'الف': 0, 'ب': 1, 'ج': 2, 'د': 3, 'a': 0, 'b': 1, 'c': 2, 'd': 3 };
+      if (/^[1-6۱-۶]$/.test(c)) ci = parseInt(c.replace(/[۱-۶]/g, function (x) { return '۱۲۳۴۵۶'.indexOf(x) + 1; })) - 1; else if (map[c.toLowerCase()] != null) ci = map[c.toLowerCase()];
+      out.push({ q: r[0], options: r.slice(1, 5), correct: ci, points: parseFloat(r[6]) || 1, _n: opts.length });
+    });
+    return out.filter(function (x) { return x._n >= 2; }).map(function (x) { delete x._n; return x; });
+  }
+  function docxText(buf) {
+    // خواندن word/document.xml از فایل docx (zip) بدون کتابخانه
+    var dv = new DataView(buf), u8 = new Uint8Array(buf), i = u8.length - 22;
+    while (i >= 0 && dv.getUint32(i, true) !== 0x06054b50) i--;
+    if (i < 0) return Promise.reject(new Error('فایل docx معتبر نیست.'));
+    var n = dv.getUint16(i + 10, true), p = dv.getUint32(i + 16, true), found = null;
+    for (var k = 0; k < n; k++) {
+      var nl = dv.getUint16(p + 28, true), el = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true);
+      var name = new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nl));
+      if (name === 'word/document.xml') found = { method: dv.getUint16(p + 10, true), csize: dv.getUint32(p + 20, true), off: dv.getUint32(p + 42, true) };
+      p += 46 + nl + el + cl;
+    }
+    if (!found) return Promise.reject(new Error('متن فایل Word پیدا نشد.'));
+    var ds = found.off + 30 + dv.getUint16(found.off + 26, true) + dv.getUint16(found.off + 28, true), raw = u8.subarray(ds, ds + found.csize);
+    var xmlP;
+    if (found.method === 0) xmlP = Promise.resolve(new TextDecoder('utf-8').decode(raw));
+    else if (typeof DecompressionStream === 'undefined') return Promise.reject(new Error('این مرورگر از خواندن Word پشتیبانی نمی‌کند؛ فایل را به txt یا csv تبدیل کنید.'));
+    else xmlP = new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
+    return xmlP.then(function (xml) {
+      var ent = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&apos;': "'" };
+      return xml.replace(/<w:tab\/>/g, ' ').replace(/<w:br[^>]*\/>/g, '\n').replace(/<\/w:p>/g, '\n').replace(/<[^>]+>/g, '').replace(/&(amp|lt|gt|quot|apos);/g, function (m) { return ent[m]; });
+    });
+  }
+  function importFile(f) {
+    var ext = (f.name.match(/\.([a-z0-9]+)$/i) || [, ''])[1].toLowerCase();
+    if (ext === 'docx') return f.arrayBuffer().then(docxText).then(parseQuick);
+    return f.arrayBuffer().then(function (b) {
+      var t = new TextDecoder('utf-8').decode(b);
+      return ext === 'csv' || ext === 'tsv' ? parseCsv(t) : parseQuick(stripBom(t));
+    });
+  }
+  function sampleCsv() {
+    var rows = [['سؤال', 'گزینه ۱', 'گزینه ۲', 'گزینه ۳', 'گزینه ۴', 'شمارهٔ گزینهٔ درست', 'بارم'], ['۲+۲ چند است؟', '۳', '۴', '۵', '۶', '2', '1'], ['پایتخت ایران کدام است؟', 'تهران', 'شیراز', 'تبریز', 'یزد', '1', '1']];
+    downloadBlob(new Blob(['﻿' + rows.map(function (r) { return r.join(','); }).join('\r\n')], { type: 'text/csv;charset=utf-8' }), 'نمونه-سوالات.csv');
+  }
+
+  VIEWS.t_exam_form = function (box, p, X) {
+    var load = p.id ? call('lmsGetExam', p.id).then(function (r) { return r.exam; }) : Promise.resolve({ kind: 'quiz', questions: [], maxScore: 20, durationMin: 20, status: 'draft' });
+    setTop({ title: p.id ? 'ویرایش آزمون' : 'آزمون جدید', sub: '' });
+    return load.then(function (e) {
+      if (!X.alive()) return;
+      box.textContent = '';
+      var kind = e.kind, qs = (e.questions || []).slice();
+      var title = inp({ value: e.title || '', maxlength: '150', placeholder: 'عنوان آزمون' });
+      var link = inp({ type: 'url', value: e.link || '', placeholder: 'https://forms.gle/…', dir: 'ltr' });
+      var max = inp({ type: 'number', inputmode: 'decimal', value: e.maxScore || 20 }), dur = inp({ type: 'number', inputmode: 'numeric', value: e.durationMin || 0, min: '0' });
+      var st = inp({ type: 'datetime-local', value: toLocalInput(e.startAt) }), en = inp({ type: 'datetime-local', value: toLocalInput(e.endAt) });
+      var pub = h('input', { type: 'checkbox', checked: e.status === 'published' }), sa = h('input', { type: 'checkbox', checked: !!e.showAnswers });
+      var seg = h('div', { class: 'seg' }), linkBox = h('div'), quizBox = h('div'), qlist = h('div');
+      var dirty = false; box.addEventListener('input', function () { dirty = true; });
+      X.setGuard(function () { return !dirty || window.confirm('تغییرات ذخیره نشده از بین می‌رود. خارج می‌شوید؟'); });
+      function drawSeg() {
+        seg.textContent = '';
+        if (p.id) { return seg.append(h('button', { class: 'on', type: 'button', text: kind === 'quiz' ? 'آزمون آنلاین (در برنامه)' : 'لینک آزمون خارجی' })); }
+        [['quiz', 'آزمون آنلاین'], ['link', 'لینک آزمون']].forEach(function (k) { seg.append(h('button', { type: 'button', class: kind === k[0] ? 'on' : '', text: k[1], onclick: function () { kind = k[0]; drawSeg(); drawKind(); } })); });
+      }
+      function drawKind() { linkBox.hidden = kind !== 'link'; quizBox.hidden = kind !== 'quiz'; }
+      function drawQs() {
+        qlist.textContent = '';
+        qs.forEach(function (q, i) {
+          var qt = h('textarea', { class: 'inp', rows: '2', placeholder: 'متن سؤال', value: q.q || '' });
+          qt.addEventListener('input', function () { q.q = qt.value; });
+          var pt = inp({ type: 'number', inputmode: 'decimal', value: q.points || 1, style: 'width:80px' }); pt.addEventListener('input', function () { q.points = pt.value; });
+          var rows = h('div');
+          (q.options.length ? q.options : (q.options = ['', '', '', ''])).forEach(function (o, j) {
+            var rd = h('input', { type: 'radio', name: 'q' + i, checked: q.correct === j, 'aria-label': 'گزینهٔ درست' }); rd.addEventListener('change', function () { q.correct = j; });
+            var ot = inp({ value: o, placeholder: 'گزینهٔ ' + fa(j + 1) }); ot.addEventListener('input', function () { q.options[j] = ot.value; });
+            var del = h('button', { class: 'ibtn sm', type: 'button', 'aria-label': 'حذف گزینه', onclick: function () { if (q.options.length > 2) { q.options.splice(j, 1); if (q.correct === j) q.correct = -1; else if (q.correct > j) q.correct--; drawQs(); } } }, ic('x'));
+            rows.append(h('div', { class: 'orow' }, rd, ot, del));
+          });
+          qlist.append(h('div', { class: 'qb' }, h('div', { class: 'qh' }, h('span', { text: 'سؤال ' + fa(i + 1) }),
+            h('button', { class: 'ibtn sm', type: 'button', 'aria-label': 'حذف سؤال', onclick: function () { qs.splice(i, 1); drawQs(); } }, ic('trash'))), qt, rows,
+            h('div', { class: 'row', style: 'margin-top:6px;gap:8px' }, h('button', { class: 'btn sm', type: 'button', text: '+ گزینه', onclick: function () { if (q.options.length < 6) { q.options.push(''); drawQs(); } } }),
+              h('span', { class: 'grow' }), h('span', { class: 'sub', text: 'بارم:' }), pt)));
+        });
+        if (!qs.length) qlist.append(h('div', { class: 'sub', style: 'text-align:center;padding:10px', text: 'سؤالی اضافه نشده است.' }));
+      }
+      var quick = h('textarea', { class: 'inp', rows: '7', dir: 'rtl', placeholder: 'سؤال اول؟\nالف) گزینه ۱\n*ب) گزینهٔ درست (با ستاره)\nج) گزینه ۳\nد) گزینه ۴\n\nسؤال دوم؟\n…' });
+      quizBox.append(sectionHead('سؤالات'), qlist,
+        h('button', { class: 'btn block', type: 'button', style: 'margin-bottom:10px', text: '+ افزودن سؤال', onclick: function () { qs.push({ q: '', options: ['', '', '', ''], correct: -1, points: 1 }); dirty = true; drawQs(); } }),
+        h('div', { class: 'card' }, h('h3', { text: 'ورود گروهی از فایل' }),
+          h('div', { class: 'sub', style: 'margin-bottom:8px', text: 'فایل Word (docx)، متنی (txt) یا اکسل ذخیره‌شده به‌صورت CSV. در Word/txt هر سؤال یک خط و گزینه‌ها «الف) ب) ج) د)» با ستاره برای گزینهٔ درست؛ در CSV ستون‌ها: سؤال، ۴ گزینه، شمارهٔ درست، بارم.' }),
+          h('input', { type: 'file', accept: '.docx,.txt,.csv,.tsv', onchange: function () {
+            var f = this.files[0], el = this; if (!f) return;
+            importFile(f).then(function (got) {
+              el.value = ''; if (!got.length) return toast('سؤال معتبری در فایل پیدا نشد؛ قالب را بررسی کنید.', 'er');
+              qs = qs.concat(got); dirty = true; drawQs();
+              var bad = got.filter(function (x) { return x.correct < 0; }).length; toast(fa(got.length) + ' سؤال از فایل اضافه شد' + (bad ? '؛ گزینهٔ درست ' + fa(bad) + ' مورد را مشخص کنید.' : ' ✅'), bad ? '' : 'ok');
+            }).catch(function (er) { toast(er.message || 'خواندن فایل ناموفق بود.', 'er'); });
+          } }),
+          h('button', { class: 'btn sm', type: 'button', style: 'margin-top:8px', text: 'دانلود فایل نمونه (CSV)', onclick: sampleCsv })),
+        h('div', { class: 'card' }, h('h3', { text: 'افزودن سریع (چسباندن متن)' }), h('div', { class: 'sub', style: 'margin-bottom:6px', text: 'هر سؤال یک خط، گزینه‌ها خط‌های بعدی با «الف) ب) ج) د)»؛ گزینهٔ درست را با * شروع کنید.' }), quick,
+          h('button', { class: 'btn sm', type: 'button', style: 'margin-top:8px', text: 'تبدیل به سؤال', onclick: function () {
+            var got = parseQuick(quick.value); if (!got.length) return toast('سؤال معتبری پیدا نشد.', 'er');
+            qs = qs.concat(got); quick.value = ''; dirty = true; drawQs();
+            var bad = got.filter(function (q) { return q.correct < 0; }).length; toast(fa(got.length) + ' سؤال اضافه شد' + (bad ? '؛ گزینهٔ درست ' + fa(bad) + ' مورد را مشخص کنید.' : '.'), bad ? '' : 'ok');
+          } })),
+        field('مدت آزمون (دقیقه؛ ۰ = نامحدود)', dur), h('label', { class: 'sw', style: 'margin-bottom:12px' }, sa, 'پس از ارسال، پاسخ‌های درست به دانش‌آموز نمایش داده شود'));
+      linkBox.append(field('لینک آزمون (گوگل‌فرم، پرس‌لاین، …)', link), h('div', { class: 'note in', text: 'نمرهٔ آزمون لینکی را بعد از برگزاری، در صفحهٔ «نتایج آزمون» به‌صورت دستی ثبت می‌کنید.' }));
+      drawSeg(); drawKind(); drawQs();
+      var btn = h('button', { class: 'btn pri block', text: 'ذخیره' });
+      btn.addEventListener('click', function () {
+        busy(btn, true);
+        var data = { id: p.id, courseId: p.courseId || e.courseId, title: title.value, kind: kind, link: link.value, questions: qs.map(function (q) { return { q: q.q, options: q.options, correct: q.options.filter(function (o, j) { return nz(o) || j < 0; }).length ? q.correct : -1, points: q.points }; }),
+          durationMin: dur.value, maxScore: max.value, startAt: fromLocalInput(st.value), endAt: fromLocalInput(en.value), status: pub.checked ? 'published' : 'draft', showAnswers: sa.checked };
+        // گزینه‌های خالی حذف می‌شوند؛ اندیس درست را متناسب کنیم
+        data.questions = qs.map(function (q) { var idx = 0, ok = -1, os = []; q.options.forEach(function (o, j) { if (nz(o)) { if (j === q.correct) ok = idx; os.push(o); idx++; } }); return { q: q.q, options: os, correct: ok, points: q.points }; });
+        call('lmsSaveExam', data).then(function () { dirty = false; toast('آزمون ذخیره شد ✅', 'ok'); history.back(); }).catch(function (er) { busy(btn, false); toast(er.message, 'er'); });
+      });
+      box.append(h('div', { class: 'card' }, field('عنوان آزمون', title), seg), linkBox, quizBox,
+        h('div', { class: 'card' }, h('div', { class: 'two' }, field('بارم کل', max), field('', h('span'))), field('شروع (اختیاری)', st), field('پایان (اختیاری)', en),
+          h('label', { class: 'sw', style: 'margin-bottom:14px' }, pub, 'منتشر شود (برای دانش‌آموزان قابل مشاهده باشد)'), btn,
+          p.id ? h('button', { class: 'btn bad block', style: 'margin-top:8px', text: 'حذف آزمون', onclick: function () {
+            ask('آزمون و همهٔ نتایج آن حذف شود؟', 'حذف', true).then(function (y) { if (y) call('lmsDeleteExam', p.id).then(function () { dirty = false; toast('حذف شد', 'ok'); history.go(-2); }).catch(function (er) { toast(er.message, 'er'); }); });
+          } }) : null));
+    });
+  };
+
+  /* ----- نتایج آزمون ----- */
+  VIEWS.t_exam_results = function (box, p, X) {
+    return call('lmsExamResults', p.id).then(function (r) {
+      if (!X.alive()) return;
+      var e = r.exam, s = r.stats;
+      setTop({ title: e.title, sub: 'نتایج آزمون', actions: [h('button', { class: 'ibtn', 'aria-label': 'ویرایش', onclick: function () { nav('t_exam_form', { id: e.id, courseId: p.courseId }); } }, ic('edit'))] });
+      box.textContent = '';
+      box.append(h('div', { class: 'pill-stats' }, h('div', { class: 'pstat' }, h('b', { style: 'color:#6d28d9', text: num(s.avg) }), h('span', { text: 'میانگین' })),
+        h('div', { class: 'pstat' }, h('b', { style: 'color:#059669', text: num(s.max) }), h('span', { text: 'بیشترین' })), h('div', { class: 'pstat' }, h('b', { style: 'color:#dc2626', text: num(s.min) }), h('span', { text: 'کمترین' }))));
+      box.append(h('div', { class: 'sub', style: 'margin-bottom:8px;text-align:center', text: fa(s.count) + ' نفر از ' + fa(s.total) + ' نفر نمره دارند · بارم: ' + num(e.maxScore) }));
+      var inputs = {};
+      box.append(sectionHead('دانش‌آموزان'));
+      r.rows.forEach(function (x) {
+        var auto = x.source === 'auto', ip = h('input', { class: 'gin', type: 'number', inputmode: 'decimal', min: '0', max: String(e.maxScore), step: 'any', value: x.score == null ? '' : x.score, disabled: auto, 'aria-label': 'نمرهٔ ' + x.name });
+        inputs[x.studentCode] = { el: ip, orig: x.score == null ? '' : String(x.score), auto: auto };
+        var st = x.status === 'done' ? (auto ? 'خودکار · ' + fmtDT(x.submittedAt) : 'دستی') : x.status === 'inprogress' ? 'در حال آزمون' : 'شرکت نکرده';
+        box.append(h('div', { class: 'item' }, h('div', { class: 'avatar sm', text: x.name.charAt(0) }), h('div', { class: 'grow' }, h('div', { class: 'title', text: x.name }), h('div', { class: 'sub', text: st })), ip));
+      });
+      var btn = h('button', { class: 'btn good block', style: 'margin-top:10px', text: 'ذخیرهٔ نمرات دستی' });
+      btn.addEventListener('click', function () {
+        var list = []; Object.keys(inputs).forEach(function (k) { var o = inputs[k]; if (!o.auto && o.el.value !== o.orig) list.push({ studentCode: k, score: o.el.value }); });
+        if (!list.length) return toast('تغییری برای ذخیره نیست.');
+        busy(btn, true); call('lmsSaveExamScores', e.id, list).then(function (res) { toast(fa(res.saved) + ' نمره ذخیره شد ✅', 'ok'); render(); }).catch(function (er) { busy(btn, false); toast(er.message, 'er'); });
+      });
+      box.append(btn);
+      if (r.qStats.length) {
+        box.append(sectionHead('درصد پاسخ درست هر سؤال'));
+        r.qStats.forEach(function (q, i) {
+          box.append(h('div', { class: 'card', style: 'padding:10px 12px' }, h('div', { class: 'sub', text: fa(i + 1) + '. ' + q.q }), h('div', { class: 'row' }, h('div', { class: 'bar grow' }, h('i', { style: 'width:' + (q.rate || 0) + '%' })), h('b', { text: q.rate == null ? '—' : fa(q.rate) + '٪' }))));
+        });
+      }
+    });
+  };
+
+  /* ----- دفتر نمرات ----- */
+  function tGradebook(body, ov, X) {
+    var c = ov.course, wrap = h('div'); body.append(wrap); skeleton(wrap);
+    call('lmsGradebook', c.id).then(function (g) {
+      if (!X.alive()) return;
+      wrap.textContent = '';
+      wrap.append(h('div', { class: 'row', style: 'gap:8px;margin-bottom:10px' },
+        h('button', { class: 'btn pri grow', onclick: function () { nav('t_grade_item', { courseId: c.id }); } }, ic('plus'), 'ثبت نمرهٔ جدید'),
+        h('button', { class: 'btn', onclick: function () { exportCsv(g, c); } }, ic('down'), 'اکسل (CSV)')));
+      if (!g.students.length) return wrap.append(emptyBox('👥', 'دانش‌آموزی در این کلاس نیست.'));
+      var t = h('table', { class: 'tbl' }), hr = h('tr', null, h('th', { class: 'nm', text: 'دانش‌آموز' }));
+      g.columns.forEach(function (col) {
+        var th = h('th', { class: 'col-btn', title: col.title, onclick: function () {
+          if (col.kind === 'activity') nav('t_subs', { id: col.key.slice(2) }); else if (col.kind === 'exam') nav('t_exam_results', { id: col.key.slice(2), courseId: c.id }); else nav('t_grade_item', { courseId: c.id, itemId: col.itemId });
+        } }, h('div', { text: (col.kind === 'activity' ? '📝 ' : col.kind === 'exam' ? '🧪 ' : '⭐ ') + col.title }), h('small', { text: 'از ' + num(col.max) }));
+        hr.append(th);
+      });
+      hr.append(h('th', { class: 'avg', text: 'میانگین (۲۰)' })); t.append(h('thead', null, hr));
+      var tb = h('tbody');
+      g.students.forEach(function (s) {
+        var tr = h('tr', null, h('td', { class: 'nm', text: s.name }));
+        g.columns.forEach(function (col) { var v = g.cells[s.code][col.key]; tr.append(h('td', { class: v == null ? '' : (v / col.max >= .5 ? 'ok' : 'no'), text: v == null ? '—' : num(v) })); });
+        var av = g.avg20[s.code]; tr.append(h('td', { class: av == null ? '' : (av >= 10 ? 'ok' : 'no'), style: 'font-weight:900', text: num(av) }));
+        tb.append(tr);
+      });
+      t.append(tb);
+      wrap.append(h('div', { class: 'tbl-wrap' }, t));
+      if (!g.columns.length) wrap.append(h('div', { class: 'note in', text: 'هنوز نمره‌ای ثبت نشده است؛ نمرهٔ فعالیت‌ها و آزمون‌ها خودکار اینجا جمع می‌شود.' }));
+    }).catch(function (e) { if (X.alive() && !(e && e.code === 'AUTH')) { wrap.textContent = ''; wrap.append(errBox(e, function () { body.textContent = ''; tGradebook(body, ov, X); })); } });
+  }
+  function exportCsv(g, c) {
+    var q = function (v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var rows = [['کد ملی/دانش‌آموز', 'نام'].concat(g.columns.map(function (x) { return x.title + ' (از ' + x.max + ')'; })).concat(['میانگین از ۲۰'])];
+    g.students.forEach(function (s) { rows.push([s.code, s.name].concat(g.columns.map(function (x) { var v = g.cells[s.code][x.key]; return v == null ? '' : v; })).concat([g.avg20[s.code] == null ? '' : g.avg20[s.code]])); });
+    downloadBlob(new Blob(['﻿' + rows.map(function (r) { return r.map(q).join(','); }).join('\r\n')], { type: 'text/csv;charset=utf-8' }), 'نمرات-' + c.lesson + '-' + c.classCode + '.csv');
+  }
+
+  VIEWS.t_grade_item = function (box, p, X) {
+    var q1 = call('lmsGradebook', p.courseId), q2 = p.itemId ? call('lmsGetGradeItem', p.courseId, p.itemId) : Promise.resolve(null);
+    setTop({ title: p.itemId ? 'ویرایش نمره' : 'ثبت نمرهٔ جدید', sub: '' });
+    return Promise.all([q1, q2]).then(function (rs) {
+      if (!X.alive()) return;
+      var g = rs[0], it = rs[1] && rs[1].item || { title: '', type: 'کلاسی', maxScore: 20, date: '', note: '', entries: {} };
+      box.textContent = '';
+      var types = ['کلاسی', 'کوییز', 'مستمر', 'پایانی', 'پروژه', 'سایر'];
+      var title = inp({ value: it.title, maxlength: '120', placeholder: 'مثلاً: کوییز فصل ۲' }), type = h('select', { class: 'inp' }, types.map(function (t) { return h('option', { value: t, selected: t === it.type, text: t }); }));
+      var max = inp({ type: 'number', inputmode: 'decimal', value: it.maxScore }), date = inp({ type: 'date', value: it.date || '' }), note = inp({ value: it.note || '', maxlength: '300', placeholder: 'توضیح (اختیاری)' });
+      var ins = {}, dirty = false; box.addEventListener('input', function () { dirty = true; });
+      X.setGuard(function () { return !dirty || window.confirm('تغییرات ذخیره نشده از بین می‌رود. خارج می‌شوید؟'); });
+      box.append(h('div', { class: 'card' }, field('عنوان', title), h('div', { class: 'two' }, field('نوع', type), field('بارم', max)), field('تاریخ', date), field('توضیح', note)));
+      box.append(sectionHead('نمرات دانش‌آموزان'));
+      g.students.forEach(function (s) {
+        var ip = h('input', { class: 'gin', type: 'number', inputmode: 'decimal', step: 'any', min: '0', value: it.entries[s.code] == null ? '' : it.entries[s.code], 'aria-label': 'نمرهٔ ' + s.name });
+        ip.addEventListener('input', function () { var v = parseFloat(ip.value); ip.classList.toggle('bad', !isNaN(v) && (v < 0 || v > parseFloat(max.value || 20))); });
+        ins[s.code] = ip; box.append(h('div', { class: 'item' }, h('div', { class: 'avatar sm', text: s.name.charAt(0) }), h('div', { class: 'grow title', text: s.name }), ip));
+      });
+      var btn = h('button', { class: 'btn pri block', style: 'margin-top:10px', text: 'ذخیره' });
+      btn.addEventListener('click', function () {
+        busy(btn, true);
+        call('lmsSaveGradeItem', { courseId: p.courseId, itemId: p.itemId, title: title.value, type: type.value, maxScore: max.value, date: date.value, note: note.value, entries: Object.keys(ins).map(function (k) { return { studentCode: k, score: ins[k].value }; }) })
+          .then(function (res) { dirty = false; toast(fa(res.saved) + ' نمره ذخیره شد ✅', 'ok'); history.back(); }).catch(function (e) { busy(btn, false); toast(e.message, 'er'); });
+      });
+      box.append(btn);
+      if (p.itemId) box.append(h('button', { class: 'btn bad block', style: 'margin-top:8px', text: 'حذف این مورد نمره', onclick: function () {
+        ask('این مورد نمره برای همهٔ دانش‌آموزان حذف شود؟', 'حذف', true).then(function (y) { if (y) call('lmsDeleteGradeItem', p.courseId, p.itemId).then(function () { dirty = false; toast('حذف شد', 'ok'); history.back(); }).catch(function (e) { toast(e.message, 'er'); }); });
+      } }));
+    });
+  };
+
+  /* ----- پیام‌ها ----- */
+  function tInbox(body, ov, X) {
+    var c = ov.course, wrap = h('div'); body.append(wrap); skeleton(wrap);
+    call('lmsInbox', c.id).then(function (r) {
+      if (!X.alive()) return;
+      wrap.textContent = '';
+      var sel = h('select', { class: 'inp', style: 'flex:1' }, h('option', { value: '', text: 'پیام جدید به دانش‌آموز…' }), r.students.map(function (s) { return h('option', { value: s.code, text: s.name }); }));
+      sel.addEventListener('change', function () { if (sel.value) nav('t_thread', { courseId: c.id, studentCode: sel.value, name: sel.options[sel.selectedIndex].text }); });
+      wrap.append(h('button', { class: 'btn pri block', style: 'margin-bottom:10px', onclick: function () { nav('t_thread', { courseId: c.id, studentCode: '*', name: 'اطلاعیهٔ کلاس' }); } }, ic('mega'), 'ارسال اطلاعیه به کل کلاس'), h('div', { class: 'row', style: 'margin-bottom:12px' }, sel));
+      if (!r.threads.length) return wrap.append(emptyBox('💬', 'هنوز پیامی از دانش‌آموزان نرسیده است.'));
+      r.threads.forEach(function (t) {
+        wrap.append(h('button', { class: 'item', onclick: function () { nav('t_thread', { courseId: c.id, studentCode: t.studentCode, name: t.name }); } },
+          h('div', { class: 'avatar sm', text: t.name.charAt(0) }), h('div', { class: 'grow' }, h('div', { class: 'title', text: t.name }), h('div', { class: 'sub', text: (t.lastMine ? 'شما: ' : '') + t.last })),
+          t.unread ? h('span', { class: 'badge b-bad', text: fa(t.unread) }) : h('span', { class: 'sub', text: fmtDT(t.lastAt) })));
+      });
+    }).catch(function (e) { if (X.alive() && !(e && e.code === 'AUTH')) { wrap.textContent = ''; wrap.append(errBox(e, function () { body.textContent = ''; tInbox(body, ov, X); })); } });
+  }
+  VIEWS.t_thread = function (box, p, X) {
+    setTop({ title: p.name || 'گفتگو', sub: p.studentCode === '*' ? 'برای همهٔ دانش‌آموزان کلاس' : 'گفتگوی خصوصی' });
+    box.textContent = '';
+    var wrap = h('div'); box.append(wrap);
+    chatPanel(wrap, X, p.courseId, p.studentCode, { placeholder: p.studentCode === '*' ? 'متن اطلاعیه…' : 'پاسخ به دانش‌آموز…', empty: p.studentCode === '*' ? 'اطلاعیه‌ای نفرستاده‌اید.' : 'هنوز پیامی نیست.' });
+  };
+
+  /* ---------- شروع و بازیابی نشست ---------- */
+  function start() {
+    document.documentElement.className = 'has-session';
+    stack = [{ name: S.role === 'teacher' ? 't_home' : 's_home', p: {} }];
+    try { history.replaceState({ d: 1 }, ''); } catch (e) {}
+    render();
+  }
+  try {
+    var saved = JSON.parse(localStorage.getItem(SKEY) || 'null');
+    if (saved && saved.token && saved.role && Date.now() - (saved.ts || 0) < MAXAGE) { S = saved; start(); }
+    else { localStorage.removeItem(SKEY); document.documentElement.className = 'no-session'; }
+  } catch (e) { document.documentElement.className = 'no-session'; }
+  // بیدار کردن سرور
+  try { google.script.run.ping(); } catch (e) {}
+  try { if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); } catch (e) {}
+})();
+</script>
+</body>
+</html>
