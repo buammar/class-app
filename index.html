@@ -908,9 +908,10 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
     var qs = [], cur = null;
     String(text).split(/\r?\n/).forEach(function (line) {
       line = line.trim(); if (!line) { return; }
-      var m = line.match(/^([*✓✔]\s*)?(?:(?:الف|ب|ج|د|[A-Da-d1-4۱-۴])[\)\.\-:]|[-•])\s*(.+)$/);
+      var m = line.match(/^([*✓✔]\s*)?(?:(?:الف|ب|ج|د|[A-Da-d])[\)\.\-:]|[-•])\s*(.+)$/), dm = null;
+      if (!m && cur) { dm = line.match(/^([*✓✔]\s*)?([1-6۱-۶])\)\s*(.+)$/); if (dm && parseInt(String(dm[2]).replace(/[۱-۶]/g, function (x) { return '۱۲۳۴۵۶'.indexOf(x) + 1; })) === cur.options.length + 1) m = [dm[0], dm[1], dm[3]]; }
       if (m && cur) { cur.options.push(m[2].trim()); if (m[1]) cur.correct = cur.options.length - 1; }
-      else { cur = { q: line.replace(/^\d+[\)\.\-:]\s*/, ''), options: [], correct: -1, points: 1 }; qs.push(cur); }
+      else { cur = { q: line.replace(/^[\d۰-۹]+[\)\.\-:]\s*/, ''), options: [], correct: -1, points: 1 }; qs.push(cur); }
     });
     return qs.filter(function (q) { return q.options.length >= 2; });
   }
