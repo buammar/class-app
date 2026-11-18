@@ -203,11 +203,27 @@ td.avg,th.avg{background:#faf5ff;font-weight:900}
 td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
 .tab{padding:9px 7px!important;font-size:.76rem!important;gap:4px!important;flex:1 1 0!important}.tab .ic{width:16px;height:16px}
 .two>*{min-width:0}.inp{max-width:100%;min-width:0}input[type=date],input[type=datetime-local]{width:100%;-webkit-appearance:none;appearance:none;text-align:right}html,body{overflow-x:hidden}
+
+.avatar.has{background-size:cover!important;background-position:center!important;color:transparent!important}
+.avatar.big{width:48px;height:48px}.avatar.pf:not(.has){background:linear-gradient(135deg,var(--p),var(--p2));color:#fff}
+.voice{display:flex;align-items:center;gap:8px;min-width:190px}
+.voice .pl{width:38px;height:38px;border-radius:50%;border:0;display:grid;place-items:center;font-size:1rem;cursor:pointer;background:rgba(255,255,255,.25);color:inherit;flex-shrink:0}
+.msg.you .voice .pl{background:#ede9fe;color:var(--p)}
+.voice .wv{flex:1;height:5px;border-radius:5px;background:rgba(255,255,255,.35);overflow:hidden}
+.msg.you .voice .wv{background:#e5e7eb}
+.voice .wv i{display:block;height:100%;width:0;background:currentColor;opacity:.85}
+.voice .dur{font-size:.75rem;font-variant-numeric:tabular-nums;min-width:38px;text-align:left}
+.rec{flex:1;display:flex;align-items:center;gap:10px;background:#fff;border:2px solid #fecaca;border-radius:16px;padding:6px 12px;min-height:46px}
+.rec .dot{width:11px;height:11px;border-radius:50%;background:#ef4444;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.rec b{font-variant-numeric:tabular-nums;flex:1}
+.composer .btn.rd{background:#ef4444;color:#fff;border:0}
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" transform="scale(-1,1) translate(-24,0)"/><path d="M20 12H5" transform="scale(1)"/></symbol>
   <symbol id="i-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
@@ -339,6 +355,27 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
     setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
   }
 
+  /* ---------- عکس دانش‌آموزان ---------- */
+  var PH = {}, PHDONE = {};
+  function paintAv(el) {
+    var u = PH[el.getAttribute('data-code')];
+    if (u) { el.style.backgroundImage = 'url("' + u + '")'; el.classList.add('has'); }
+  }
+  function avatar(name, code, cls) {
+    var el = h('div', { class: 'avatar ' + (cls || ''), 'data-code': code || '', text: String(name || '؟').trim().charAt(0) });
+    if (code) paintAv(el);
+    return el;
+  }
+  function ensurePhotos(courseId) {
+    var key = S.role === 'student' ? 'me' : courseId;
+    if (!key || PHDONE[key]) return;
+    PHDONE[key] = 1;
+    call('lmsPhotos', courseId).then(function (r) {
+      Object.keys(r.map || {}).forEach(function (k) { PH[k] = r.map[k]; });
+      document.querySelectorAll('.avatar[data-code]').forEach(paintAv);
+    }).catch(function () { delete PHDONE[key]; });
+  }
+
   /* ---------- ارتباط با سرور ---------- */
   function rpc(fn, args) {
     return new Promise(function (res, rej) {
@@ -378,7 +415,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
     if (S.token) { try { google.script.run.lmsLogout(S.token); } catch (e) {} }
     try { localStorage.removeItem(SKEY); } catch (e) {}
     leaveFns.forEach(function (f) { try { f(); } catch (e) {} }); leaveFns = []; guard = null;
-    S = { token: '', role: '', user: null }; stack = []; rid++;
+    S = { token: '', role: '', user: null }; stack = []; rid++; PH = {}; PHDONE = {};
     $('main').textContent = ''; $('topbar').textContent = '';
     $('username').value = ''; $('password').value = '';
     document.documentElement.className = 'no-session';
@@ -399,7 +436,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
   function setTop(o) {
     var t = $('topbar'); t.textContent = '';
     if (stack.length > 1) t.append(h('button', { class: 'ibtn', 'aria-label': 'بازگشت', onclick: back }, ic('back')));
-    else t.append(h('div', { class: 'avatar', text: (firstName(S.user && S.user.name) || '؟').charAt(0) }));
+    else t.append(avatar(firstName(S.user && S.user.name) || '؟', S.role === 'student' ? 'me' : '', 'big'));
     t.append(h('div', { class: 'ttl' }, h('b', { text: o.title || '' }), h('span', { text: o.sub || '' })));
     (o.actions || []).forEach(function (a) { t.append(a); });
     t.append(h('button', { class: 'ibtn', 'aria-label': 'تازه‌سازی', onclick: function () { render(); } }, ic('refresh')));
@@ -447,10 +484,34 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
   function fileTypeIcon(t) { t = String(t || '').toLowerCase(); return t === 'pdf' ? '📕' : (t === 'html' || t === 'htm') ? '🌐' : t === 'txt' ? '📄' : '🖼️'; }
 
   /* ---------- گفتگو (مشترک) ---------- */
+  var VOICE_MAX = 120, vCache = {}, vCur = null;
+  function mmss(s) { s = Math.max(0, Math.round(s || 0)); return fa(String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0')); }
+  function stopVoice() { if (vCur) { try { vCur.a.pause(); } catch (e) {} vCur.reset(); vCur = null; } }
+  function voiceBubble(m) {
+    var pl = h('button', { class: 'pl', type: 'button', 'aria-label': 'پخش', text: '▶' }), bar = h('i'), dur = h('span', { class: 'dur', text: mmss(m.audioSec) });
+    var me = { a: null, reset: function () { pl.textContent = '▶'; bar.style.width = '0'; dur.textContent = mmss(m.audioSec); } };
+    pl.addEventListener('click', function () {
+      if (vCur && vCur === me) { stopVoice(); return; }
+      stopVoice();
+      pl.textContent = '…'; pl.disabled = true;
+      var get = vCache[m.id] ? Promise.resolve(vCache[m.id]) : call('lmsGetFile', 'voice', m.id).then(function (r) { return (vCache[m.id] = URL.createObjectURL(new Blob([b64bytes(r.base64)], { type: r.mime || 'audio/webm' }))); });
+      get.then(function (url) {
+        var a = new Audio(url); me.a = a; vCur = me; pl.disabled = false; pl.textContent = '⏸';
+        a.addEventListener('timeupdate', function () { if (a.duration && isFinite(a.duration)) { bar.style.width = (a.currentTime / a.duration * 100) + '%'; dur.textContent = mmss(a.currentTime); } });
+        a.addEventListener('ended', function () { if (vCur === me) vCur = null; me.reset(); });
+        a.play().catch(function () { me.reset(); vCur = null; toast('پخش صدا ممکن نشد.', 'er'); });
+      }).catch(function (e) { pl.disabled = false; me.reset(); toast((e && e.message) || 'دریافت صدا ناموفق بود.', 'er'); });
+    });
+    return h('div', { class: 'voice' }, pl, h('div', { class: 'wv' }, bar), dur);
+  }
+
   function chatPanel(wrap, X, courseId, studentCode, opts) {
     opts = opts || {};
     var list = h('div', { class: 'chat' }), ta = h('textarea', { rows: '1', placeholder: opts.placeholder || 'پیام خود را بنویسید…', maxlength: '1500' });
     var send = h('button', { class: 'btn pri', type: 'button', 'aria-label': 'ارسال' }, ic('send'));
+    var canRec = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+    var mic = canRec ? h('button', { class: 'btn', type: 'button', 'aria-label': 'ضبط پیام صوتی' }, ic('mic')) : null;
+    var comp = h('div', { class: 'composer' }, mic, ta, send);
     var last = '';
     function draw(msgs) {
       var sig = msgs.length + ':' + (msgs.length ? msgs[msgs.length - 1].id : '');
@@ -461,7 +522,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
       msgs.forEach(function (m) {
         list.append(h('div', { class: 'msg ' + (m.announce ? 'ann' : (m.mine ? 'me' : 'you')) },
           m.announce ? h('b', { text: '📢 اطلاعیه · ' + m.senderName }) : null, m.announce ? h('br') : null,
-          m.text, h('small', { text: (m.announce ? '' : m.senderName + ' · ') + fmtDT(m.createdAt) })));
+          m.audioSec ? voiceBubble(m) : null, m.text ? m.text : null, h('small', { text: (m.announce ? '' : m.senderName + ' · ') + fmtDT(m.createdAt) })));
       });
       if (atBottom || list.dataset.first !== '1') { list.dataset.first = '1'; setTimeout(function () { window.scrollTo(0, document.body.scrollHeight); }, 30); }
     }
@@ -476,16 +537,57 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
     }
     send.addEventListener('click', doSend);
     ta.addEventListener('input', function () { ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 130) + 'px'; });
-    wrap.append(list, h('div', { class: 'composer' }, ta, send));
+
+    /* ضبط پیام صوتی */
+    if (mic) mic.addEventListener('click', function () {
+      stopVoice();
+      var rec = null, stream = null, chunks = [], t0 = 0, iv = null, cancelled = false, mime = '';
+      ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'].some(function (t) { if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) { mime = t; return true; } return false; });
+      mic.disabled = true;
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(function (st) {
+        stream = st; rec = mime ? new MediaRecorder(st, { mimeType: mime }) : new MediaRecorder(st);
+        var timerEl = h('b', { text: mmss(0) });
+        var cancel = h('button', { class: 'btn rd', type: 'button', 'aria-label': 'لغو' }, ic('trash')), done = h('button', { class: 'btn pri', type: 'button', 'aria-label': 'ارسال صدا' }, ic('send'));
+        var bar = h('div', { class: 'composer' }, h('div', { class: 'rec' }, h('span', { class: 'dot' }), timerEl, h('span', { class: 'sub', text: 'در حال ضبط…' })), cancel, done);
+        comp.hidden = true; comp.after(bar);
+        function cleanup() { clearInterval(iv); try { stream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {} bar.remove(); comp.hidden = false; mic.disabled = false; }
+        rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+        rec.onstop = function () {
+          var sec = (Date.now() - t0) / 1000; cleanup();
+          if (cancelled) return;
+          if (sec < 1) return toast('پیام صوتی خیلی کوتاه بود.');
+          var blob = new Blob(chunks, { type: rec.mimeType || mime || 'audio/webm' });
+          if (blob.size > 2.2 * 1024 * 1024) return toast('پیام صوتی خیلی طولانی است.', 'er');
+          var fr = new FileReader();
+          fr.onload = function () {
+            send.disabled = true; toast('در حال ارسال پیام صوتی…');
+            call('lmsSend', courseId, '', studentCode, { base64: String(fr.result).split(',')[1], mime: blob.type, sec: Math.round(sec) }).then(function () { return load(); })
+              .catch(function (e) { toast(e.message || 'ارسال صدا ناموفق بود.', 'er'); }).then(function () { send.disabled = false; });
+          };
+          fr.readAsDataURL(blob);
+        };
+        cancel.addEventListener('click', function () { cancelled = true; rec.stop(); });
+        done.addEventListener('click', function () { rec.stop(); });
+        X.onLeave(function () { if (rec && rec.state !== 'inactive') { cancelled = true; try { rec.stop(); } catch (e) {} } });
+        t0 = Date.now(); rec.start();
+        iv = setInterval(function () { var s = (Date.now() - t0) / 1000; timerEl.textContent = mmss(s); if (s >= VOICE_MAX) { toast('حداکثر مدت پیام صوتی ۲ دقیقه است.'); rec.stop(); } }, 250);
+      }).catch(function (e) {
+        mic.disabled = false;
+        toast(e && e.name === 'NotAllowedError' ? 'اجازهٔ دسترسی به میکروفون داده نشد؛ در تنظیمات برنامه/مرورگر مجاز کنید.' : 'ضبط صدا در این دستگاه ممکن نیست.', 'er');
+      });
+    });
+
+    wrap.append(list, comp);
     load();
-    var iv = setInterval(function () { if (!document.hidden) load(); }, 12000);
-    X.onLeave(function () { clearInterval(iv); });
+    var iv2 = setInterval(function () { if (!document.hidden) load(); }, 12000);
+    X.onLeave(function () { clearInterval(iv2); stopVoice(); });
     return { reload: load };
   }
 
   /* ================= دانش‌آموز ================= */
   VIEWS.s_home = function (box, p, X) {
     setTop({ title: 'سلام ' + firstName(S.user.name), sub: 'کلاس ' + (S.user.classCode || '') });
+    ensurePhotos('');
     return call('lmsStudentCourses').then(function (r) {
       if (!X.alive()) return;
       box.textContent = '';
@@ -774,6 +876,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
 
   var T_TABS = [['act', 'فعالیت‌ها', 'clip'], ['exam', 'آزمون‌ها', 'star'], ['grades', 'دفتر نمرات', 'chart'], ['chat', 'پیام‌ها', 'chat']];
   VIEWS.t_course = function (box, p, X) {
+    ensurePhotos(p.id);
     return call('lmsCourseOverview', p.id).then(function (r) {
       if (!X.alive()) return;
       var c = r.course, cur = stack[stack.length - 1];
@@ -803,7 +906,20 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
   function tActs(body, r) {
     var c = r.course;
     body.append(h('button', { class: 'btn pri block', style: 'margin-bottom:12px', onclick: function () { nav('t_act_form', { courseId: c.id }); } }, ic('plus'), 'فعالیت جدید'));
-    if (!r.activities.length) return body.append(emptyBox('📝', 'هنوز فعالیتی ثبت نکرده‌اید.'));
+    body.append(h('button', { class: 'btn block', style: 'margin-bottom:12px', onclick: function () { nav('t_grade_item', { courseId: c.id, preset: 'فعالیت کلاسی' }); } }, ic('edit'), 'ثبت دستی فعالیت و نمره'));
+    var manual = h('div'); body.append(manual);
+    call('lmsGradebook', c.id).then(function (g) {
+      var items = g.columns.filter(function (x) { return x.kind === 'grade'; });
+      if (!items.length) return;
+      manual.append(sectionHead('فعالیت‌های ثبت‌شدهٔ دستی'));
+      items.forEach(function (it) {
+        var n = g.students.filter(function (s) { return g.cells[s.code][it.key] != null; }).length;
+        manual.append(h('button', { class: 'item', onclick: function () { nav('t_grade_item', { courseId: c.id, itemId: it.itemId }); } },
+          h('div', { class: 'em em-good', text: '✍️' }), h('div', { class: 'grow' }, h('div', { class: 'title', text: it.title }), h('div', { class: 'sub', text: (it.type || 'نمره') + (it.date ? ' · ' + fmtDay(it.date) : '') + ' · ' + fa(n) + ' نمره' })), h('span', { class: 'badge b-info', text: 'از ' + num(it.max) })));
+      });
+      if (r.activities.length) manual.append(sectionHead('فعالیت‌های برخط'));
+    }).catch(function () {});
+    if (!r.activities.length) return body.append(emptyBox('📝', 'هنوز فعالیت برخطی (با فایل و تحویل) ثبت نکرده‌اید.'));
     r.activities.forEach(function (a) {
       var wait = a.submitted - a.graded;
       body.append(h('button', { class: 'item', onclick: function () { nav('t_subs', { id: a.id }); } },
@@ -858,7 +974,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
   VIEWS.t_subs = function (box, p, X) {
     return call('lmsListSubmissions', p.id).then(function (r) {
       if (!X.alive()) return;
-      var a = r.activity;
+      var a = r.activity; ensurePhotos(a.courseId);
       setTop({ title: a.title, sub: 'تحویل‌ها', actions: [h('button', { class: 'ibtn', 'aria-label': 'ویرایش', onclick: function () {
         var prev = stack[stack.length - 2], cid = prev && prev.p && prev.p.id;
         call('lmsCourseOverview', cid).then(function (o) { var f = o.activities.filter(function (x) { return x.id === p.id; })[0]; nav('t_act_form', { courseId: cid, a: f }); }).catch(function (e) { toast(e.message, 'er'); });
@@ -874,7 +990,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
       r.rows.slice().sort(function (x, y) { return order[x.status] - order[y.status]; }).forEach(function (x) {
         var right = x.status === 'graded' ? scoreEl(x.sub.score, a.maxScore) : x.status === 'submitted' ? badge('b-warn', 'نمره بدهید') : badge('b-gray', 'تحویل نداده');
         box.append(h('button', { class: 'item', onclick: function () { nav('t_grade', { id: a.id, studentCode: x.studentCode }); } },
-          h('div', { class: 'avatar sm', text: x.name.charAt(0) }), h('div', { class: 'grow' }, h('div', { class: 'title', text: x.name }),
+          avatar(x.name, x.studentCode, 'sm'), h('div', { class: 'grow' }, h('div', { class: 'title', text: x.name }),
             h('div', { class: 'sub', text: x.sub && x.sub.submittedAt ? 'تحویل: ' + fmtDT(x.sub.submittedAt) + (x.late ? ' · با تأخیر' : '') : '—' })), right));
       });
     });
@@ -882,11 +998,12 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
   VIEWS.t_grade = function (box, p, X) {
     return call('lmsListSubmissions', p.id).then(function (r) {
       if (!X.alive()) return;
-      var a = r.activity, row = r.rows.filter(function (x) { return x.studentCode === p.studentCode; })[0];
+      var a = r.activity; ensurePhotos(a.courseId); var row = r.rows.filter(function (x) { return x.studentCode === p.studentCode; })[0];
       if (!row) throw new Error('دانش‌آموز یافت نشد.');
       var s = row.sub;
       setTop({ title: row.name, sub: a.title });
       box.textContent = '';
+      box.append(h('div', { class: 'row', style: 'justify-content:center;margin-bottom:10px' }, avatar(row.name, row.studentCode, 'big pf')));
       if (!s || !s.submittedAt) box.append(h('div', { class: 'note wr', text: 'این دانش‌آموز هنوز پاسخی تحویل نداده است؛ در صورت نیاز می‌توانید مستقیم نمره ثبت کنید.' }));
       else box.append(h('div', { class: 'card' }, h('h3', { text: 'پاسخ دانش‌آموز' }), h('div', { class: 'sub', text: fmtDT(s.submittedAt) + (row.late ? ' · با تأخیر' : '') }),
         s.text ? h('div', { class: 'desc', style: 'margin-top:8px', text: s.text }) : h('div', { class: 'sub', style: 'margin-top:8px', text: 'متنی ارسال نشده است.' }),
@@ -1065,7 +1182,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
   VIEWS.t_exam_results = function (box, p, X) {
     return call('lmsExamResults', p.id).then(function (r) {
       if (!X.alive()) return;
-      var e = r.exam, s = r.stats;
+      var e = r.exam, s = r.stats; ensurePhotos(e.courseId || p.courseId);
       setTop({ title: e.title, sub: 'نتایج آزمون', actions: [h('button', { class: 'ibtn', 'aria-label': 'ویرایش', onclick: function () { nav('t_exam_form', { id: e.id, courseId: p.courseId }); } }, ic('edit'))] });
       box.textContent = '';
       box.append(h('div', { class: 'pill-stats' }, h('div', { class: 'pstat' }, h('b', { style: 'color:#6d28d9', text: num(s.avg) }), h('span', { text: 'میانگین' })),
@@ -1077,7 +1194,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
         var auto = x.source === 'auto', ip = h('input', { class: 'gin', type: 'number', inputmode: 'decimal', min: '0', max: String(e.maxScore), step: 'any', value: x.score == null ? '' : x.score, disabled: auto, 'aria-label': 'نمرهٔ ' + x.name });
         inputs[x.studentCode] = { el: ip, orig: x.score == null ? '' : String(x.score), auto: auto };
         var st = x.status === 'done' ? (auto ? 'خودکار · ' + fmtDT(x.submittedAt) : 'دستی') : x.status === 'inprogress' ? 'در حال آزمون' : 'شرکت نکرده';
-        box.append(h('div', { class: 'item' }, h('div', { class: 'avatar sm', text: x.name.charAt(0) }), h('div', { class: 'grow' }, h('div', { class: 'title', text: x.name }), h('div', { class: 'sub', text: st })), ip));
+        box.append(h('div', { class: 'item' }, avatar(x.name, x.studentCode, 'sm'), h('div', { class: 'grow' }, h('div', { class: 'title', text: x.name }), h('div', { class: 'sub', text: st })), ip));
       });
       var btn = h('button', { class: 'btn good block', style: 'margin-top:10px', text: 'ذخیرهٔ نمرات دستی' });
       btn.addEventListener('click', function () {
@@ -1133,13 +1250,14 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
   }
 
   VIEWS.t_grade_item = function (box, p, X) {
+    ensurePhotos(p.courseId);
     var q1 = call('lmsGradebook', p.courseId), q2 = p.itemId ? call('lmsGetGradeItem', p.courseId, p.itemId) : Promise.resolve(null);
     setTop({ title: p.itemId ? 'ویرایش نمره' : 'ثبت نمرهٔ جدید', sub: '' });
     return Promise.all([q1, q2]).then(function (rs) {
       if (!X.alive()) return;
-      var g = rs[0], it = rs[1] && rs[1].item || { title: '', type: 'کلاسی', maxScore: 20, date: '', note: '', entries: {} };
+      var g = rs[0], it = rs[1] && rs[1].item || { title: '', type: p.preset || 'کلاسی', maxScore: 20, date: '', note: '', entries: {} };
       box.textContent = '';
-      var types = ['کلاسی', 'کوییز', 'مستمر', 'پایانی', 'پروژه', 'سایر'];
+      var types = ['فعالیت کلاسی', 'کلاسی', 'کوییز', 'مستمر', 'پایانی', 'پروژه', 'سایر'];
       var title = inp({ value: it.title, maxlength: '120', placeholder: 'مثلاً: کوییز فصل ۲' }), type = h('select', { class: 'inp' }, types.map(function (t) { return h('option', { value: t, selected: t === it.type, text: t }); }));
       var max = inp({ type: 'number', inputmode: 'decimal', value: it.maxScore }), date = inp({ type: 'date', value: it.date || '' }), note = inp({ value: it.note || '', maxlength: '300', placeholder: 'توضیح (اختیاری)' });
       var ins = {}, dirty = false; box.addEventListener('input', function () { dirty = true; });
@@ -1149,7 +1267,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
       g.students.forEach(function (s) {
         var ip = h('input', { class: 'gin', type: 'number', inputmode: 'decimal', step: 'any', min: '0', value: it.entries[s.code] == null ? '' : it.entries[s.code], 'aria-label': 'نمرهٔ ' + s.name });
         ip.addEventListener('input', function () { var v = parseFloat(ip.value); ip.classList.toggle('bad', !isNaN(v) && (v < 0 || v > parseFloat(max.value || 20))); });
-        ins[s.code] = ip; box.append(h('div', { class: 'item' }, h('div', { class: 'avatar sm', text: s.name.charAt(0) }), h('div', { class: 'grow title', text: s.name }), ip));
+        ins[s.code] = ip; box.append(h('div', { class: 'item' }, avatar(s.name, s.code, 'sm'), h('div', { class: 'grow title', text: s.name }), ip));
       });
       var btn = h('button', { class: 'btn pri block', style: 'margin-top:10px', text: 'ذخیره' });
       btn.addEventListener('click', function () {
@@ -1176,12 +1294,13 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
       if (!r.threads.length) return wrap.append(emptyBox('💬', 'هنوز پیامی از دانش‌آموزان نرسیده است.'));
       r.threads.forEach(function (t) {
         wrap.append(h('button', { class: 'item', onclick: function () { nav('t_thread', { courseId: c.id, studentCode: t.studentCode, name: t.name }); } },
-          h('div', { class: 'avatar sm', text: t.name.charAt(0) }), h('div', { class: 'grow' }, h('div', { class: 'title', text: t.name }), h('div', { class: 'sub', text: (t.lastMine ? 'شما: ' : '') + t.last })),
+          avatar(t.name, t.studentCode, 'sm'), h('div', { class: 'grow' }, h('div', { class: 'title', text: t.name }), h('div', { class: 'sub', text: (t.lastMine ? 'شما: ' : '') + t.last })),
           t.unread ? h('span', { class: 'badge b-bad', text: fa(t.unread) }) : h('span', { class: 'sub', text: fmtDT(t.lastAt) })));
       });
     }).catch(function (e) { if (X.alive() && !(e && e.code === 'AUTH')) { wrap.textContent = ''; wrap.append(errBox(e, function () { body.textContent = ''; tInbox(body, ov, X); })); } });
   }
   VIEWS.t_thread = function (box, p, X) {
+    if (p.studentCode !== '*') ensurePhotos(p.courseId);
     setTop({ title: p.name || 'گفتگو', sub: p.studentCode === '*' ? 'برای همهٔ دانش‌آموزان کلاس' : 'گفتگوی خصوصی' });
     box.textContent = '';
     var wrap = h('div'); box.append(wrap);
