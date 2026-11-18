@@ -219,12 +219,23 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
 .rec b{font-variant-numeric:tabular-nums;flex:1}
 .composer .btn.rd{background:#ef4444;color:#fff;border:0}
 .tabs{overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{flex:1 0 auto!important;white-space:nowrap}
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:40;display:flex;background:#fff;box-shadow:0 -4px 22px rgba(80,60,160,.16);padding-bottom:env(safe-area-inset-bottom);border-radius:18px 18px 0 0}
+.bnav[hidden]{display:none}
+.bnav .nv{flex:1;border:0;background:none;font:inherit;font-size:.64rem;color:#6b7280;padding:9px 2px 7px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;position:relative;min-width:0}
+.bnav .nv .ic{width:21px;height:21px}
+.bnav .nv.on{color:var(--p);font-weight:800}
+.bnav .nv.on::before{content:"";position:absolute;top:0;width:26px;height:3px;border-radius:0 0 4px 4px;background:var(--p)}
+body.has-nav .main{padding-bottom:84px}
+body.has-nav .composer{bottom:calc(60px + env(safe-area-inset-bottom))}
+body.has-nav .toast{bottom:86px!important}
+body.has-nav .tabs{display:none}
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></symbol>
   <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" transform="scale(-1,1) translate(-24,0)"/><path d="M20 12H5" transform="scale(1)"/></symbol>
   <symbol id="i-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
@@ -388,6 +399,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
     var a = Array.prototype.slice.call(arguments, 1);
     return rpc(fn, [S.token].concat(a)).catch(function (e) {
       if (e && e.code === 'AUTH') forceLogout(e.message);
+      if (e && /^عملیات نامعتبر/.test(e.message || '')) e = new Error('نسخهٔ سرور (Apps Script) قدیمی است؛ فایل Lms.gs جدید را جایگزین کنید و Deploy ← Manage deployments ← New version بزنید.');
       throw e;
     });
   }
@@ -416,11 +428,41 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
     if (S.token) { try { google.script.run.lmsLogout(S.token); } catch (e) {} }
     try { localStorage.removeItem(SKEY); } catch (e) {}
     leaveFns.forEach(function (f) { try { f(); } catch (e) {} }); leaveFns = []; guard = null;
-    S = { token: '', role: '', user: null }; stack = []; rid++; PH = {}; PHDONE = {};
+    S = { token: '', role: '', user: null }; stack = []; rid++; PH = {}; PHDONE = {}; ctx = null; drawNav();
     $('main').textContent = ''; $('topbar').textContent = '';
     $('username').value = ''; $('password').value = '';
     document.documentElement.className = 'no-session';
     setLoginErr(msg || ''); window.scrollTo(0, 0);
+  }
+
+  /* ---------- نوار ناوبری پایین (انتقال سریع بین صفحات کلاس) ---------- */
+  var ctx = null, navHide = false, popN = 0;
+  var NAV_ITEMS = [['act', 'فعالیت', 'clip'], ['exam', 'آزمون', 'star'], ['grades', 'نمرات', 'chart'], ['chat', 'پیام', 'chat'], ['live', 'مجازی', 'users']];
+  function canLeave() { return !guard || guard(); }
+  function goHome() {
+    if (!canLeave()) return;
+    var n = stack.length - 1; if (n <= 0) return;
+    guard = null; popN = n; history.go(-n);
+  }
+  function goTab(k) {
+    if (!ctx) return;
+    var top = stack[stack.length - 1];
+    if (top.name === ctx.view) { ctx.setTab(k); return; }
+    if (!canLeave()) return;
+    guard = null; nav(ctx.view, { id: ctx.id, tab: k, lesson: ctx.lesson });
+  }
+  function drawNav() {
+    var el = $('bnav');
+    if (!el) { el = h('nav', { class: 'bnav', id: 'bnav', 'aria-label': 'ناوبری' }); document.body.appendChild(el); }
+    var show = !!(S.token && ctx && !navHide);
+    el.hidden = !show; document.body.classList.toggle('has-nav', show);
+    el.textContent = '';
+    if (!show) return;
+    var top = stack[stack.length - 1], cur = top && top.name === ctx.view ? (top.p.tab || 'act') : '';
+    el.append(h('button', { type: 'button', class: 'nv', onclick: goHome }, ic('home'), h('span', { text: 'خانه' })));
+    NAV_ITEMS.forEach(function (it) {
+      el.append(h('button', { type: 'button', class: 'nv' + (cur === it[0] ? ' on' : ''), onclick: function () { goTab(it[0]); } }, ic(it[2]), h('span', { text: it[1] })));
+    });
   }
 
   /* ---------- ناوبری (دکمهٔ بازگشت گوشی هم کار می‌کند) ---------- */
@@ -429,12 +471,16 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
   function back() { if (stack.length > 1) history.back(); }
   window.addEventListener('popstate', function () {
     if (!S.token) return;
-    if (guard && !guard()) { try { history.pushState({ d: stack.length }, ''); } catch (e) {} return; }
-    if (stack.length > 1) stack.pop();
+    var n = popN || 1; popN = 0;
+    if (n === 1 && guard && !guard()) { try { history.pushState({ d: stack.length }, ''); } catch (e) {} return; }
+    stack.length = Math.max(1, stack.length - n);
     render();
   });
 
   function setTop(o) {
+    setTop_(o); drawNav();
+  }
+  function setTop_(o) {
     var t = $('topbar'); t.textContent = '';
     if (stack.length > 1) t.append(h('button', { class: 'ibtn', 'aria-label': 'بازگشت', onclick: back }, ic('back')));
     else t.append(avatar(firstName(S.user && S.user.name) || '؟', S.role === 'student' ? 'me' : '', 'big'));
@@ -445,7 +491,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
   }
 
   function render() {
-    var my = ++rid;
+    var my = ++rid; navHide = false;
     leaveFns.forEach(function (f) { try { f(); } catch (e) {} }); leaveFns = []; guard = null;
     var cur = stack[stack.length - 1], v = VIEWS[cur.name];
     var main = $('main'); main.textContent = '';
@@ -587,6 +633,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
 
   /* ================= دانش‌آموز ================= */
   VIEWS.s_home = function (box, p, X) {
+    ctx = null;
     setTop({ title: 'سلام ' + firstName(S.user.name), sub: 'کلاس ' + (S.user.classCode || '') });
     ensurePhotos('');
     return call('lmsStudentCourses').then(function (r) {
@@ -639,6 +686,8 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
       }
       box.append(h('div', { class: 'chead', style: 'background:' + grad(c.lesson) }, h('div', { class: 'em', text: emoji(c.lesson) }), h('div', null, h('b', { text: c.lesson }), h('span', { text: 'کلاس درس · ' + (c.teacherName || '') }))), tabsEl, body);
       drawTabs(); drawBody();
+      ctx = { id: c.id, lesson: c.lesson, view: 's_course', setTab: function (k) { cur.p.tab = k; drawTabs(); drawBody(); drawNav(); window.scrollTo(0, 0); } };
+      drawNav();
     });
   };
 
@@ -702,34 +751,58 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
       if (!a) throw new Error('فعالیت یافت نشد.');
       setTop({ title: a.title, sub: r.course.lesson });
       box.textContent = '';
+      var qs = a.questions || [], s = a.sub;
       var meta = h('div', { class: 'row', style: 'flex-wrap:wrap;gap:6px;margin-bottom:8px' },
-        badge('b-pri', 'بارم: ' + num(a.maxScore)), a.dueDate ? badge(a.overdue ? 'b-bad' : 'b-info', 'مهلت: ' + fmtDay(a.dueDate)) : null, a.status !== 'open' ? badge('b-gray', 'بسته شده') : null);
-      box.append(h('div', { class: 'card' }, meta, a.desc ? h('div', { class: 'desc', text: a.desc }) : h('div', { class: 'sub', text: 'توضیحی ثبت نشده است.' }),
+        badge('b-pri', 'بارم: ' + num(a.maxScore)), qs.length ? badge('b-warn', fa(qs.length) + ' سؤال') : null, a.dueDate ? badge(a.overdue ? 'b-bad' : 'b-info', 'مهلت: ' + fmtDay(a.dueDate)) : null, a.status !== 'open' ? badge('b-gray', 'بسته شده') : null);
+      box.append(h('div', { class: 'card' }, meta, a.desc ? h('div', { class: 'desc', text: a.desc }) : (qs.length ? null : h('div', { class: 'sub', text: 'توضیحی ثبت نشده است.' })),
         a.hasFile ? h('div', { class: 'filebox', style: 'margin-top:10px' }, h('span', { text: fileTypeIcon(a.fileType) }), h('div', { class: 'grow sub', text: a.fileName }), fileBtn('activity', a.id, a.fileName, a.fileType)) : null));
-      var s = a.sub;
       if (s && s.graded) {
         box.append(h('div', { class: 'card result-big' }, h('div', { class: 'sub', text: 'نمرهٔ شما' }), h('div', { class: 'n', text: num(s.score) + ' / ' + num(a.maxScore) }),
           s.feedback ? h('div', { class: 'note in', text: '💬 ' + s.feedback }) : null));
       }
-      if (s && s.submitted) {
+      var readonly = s && (s.graded || a.status !== 'open');
+      if (s && s.submitted && (readonly || !qs.length)) {
+        // نمایش پاسخ‌های ثبت‌شده (فقط‌خواندنی)
         box.append(h('div', { class: 'card' }, h('h3', { text: 'پاسخ ارسال‌شدهٔ شما' }), h('div', { class: 'sub', text: fmtDT(s.submittedAt) }),
-          s.text ? h('div', { class: 'desc', style: 'margin-top:6px', text: s.text }) : null,
+          qs.map(function (q, i) {
+            return h('div', { style: 'margin-top:10px;padding-top:10px;border-top:1px solid var(--line)' }, h('div', { class: 'title', text: fa(i + 1) + '. ' + q.q }),
+              h('div', { class: 'desc', style: 'margin-top:4px', text: (s.answers && s.answers[i]) || '— بدون پاسخ —' }),
+              s.graded && s.qScores && s.qScores[i] != null ? h('div', { style: 'margin-top:4px' }, badge(s.qScores[i] / q.points >= .5 ? 'b-good' : 'b-bad', 'نمره: ' + num(s.qScores[i]) + ' از ' + num(q.points))) : h('div', { class: 'sub', style: 'margin-top:2px', text: 'بارم: ' + num(q.points) }));
+          }),
+          s.text ? h('div', { class: 'desc', style: 'margin-top:8px', text: s.text }) : null,
           s.hasFile ? h('div', { class: 'filebox', style: 'margin-top:8px' }, h('span', { text: fileTypeIcon(s.fileType) }), h('div', { class: 'grow sub', text: s.fileName }), fileBtn('submission', s.id, s.fileName, s.fileType)) : null));
+        if (readonly && !s.graded) box.append(h('div', { class: 'note wr', text: 'مهلت این فعالیت بسته شده و دیگر پاسخی ثبت نمی‌شود.' }));
+        if (readonly) return;
       }
       if (s && s.graded) return;
       if (a.status !== 'open') { box.append(h('div', { class: 'note wr', text: 'مهلت این فعالیت بسته شده و دیگر پاسخی ثبت نمی‌شود.' })); return; }
-      var ta = h('textarea', { class: 'inp', placeholder: 'پاسخ یا توضیحات خود را بنویسید…', maxlength: '4000', value: s ? s.text : '' });
+      var dkey = 'lms_act_' + a.id, draft = [];
+      try { draft = JSON.parse(sessionStorage.getItem(dkey) || '[]'); } catch (e) {}
+      var tas = qs.map(function (q, i) {
+        var ta = h('textarea', { class: 'inp', rows: '3', maxlength: '3000', placeholder: 'پاسخ شما…', value: (s && s.answers && s.answers[i]) || draft[i] || '' });
+        ta.addEventListener('input', function () { try { sessionStorage.setItem(dkey, JSON.stringify(tas.map(function (t) { return t.value; }))); } catch (e) {} });
+        return ta;
+      });
+      var ta = qs.length ? null : h('textarea', { class: 'inp', placeholder: 'پاسخ یا توضیحات خود را بنویسید…', maxlength: '4000', value: s ? s.text : '' });
       var fi = h('input', { type: 'file', accept: '.pdf,.html,.htm,.png,.jpg,.jpeg,.webp,.txt' });
       var btn = h('button', { class: 'btn pri block', text: s && s.submitted ? 'ویرایش و ارسال مجدد' : 'ارسال پاسخ' });
       btn.addEventListener('click', function () {
         busy(btn, true, 'در حال ارسال…');
-        readFile(fi).then(function (f) { return call('lmsSubmitActivity', a.id, ta.value, f); }).then(function () {
+        readFile(fi).then(function (f) { return call('lmsSubmitActivity', a.id, ta ? ta.value : '', f, tas.map(function (t) { return t.value; })); }).then(function () {
+          try { sessionStorage.removeItem(dkey); } catch (e) {}
           toast('پاسخ شما ثبت شد ✅', 'ok'); if (X.alive()) swap('s_activity', p);
         }).catch(function (e) { busy(btn, false); toast(e.message || 'ارسال نشد.', 'er'); });
       });
-      box.append(h('div', { class: 'card' }, h('h3', { text: s && s.submitted ? 'ویرایش پاسخ' : 'پاسخ شما' }),
-        h('div', { class: 'field' }, ta),
-        h('div', { class: 'field' }, h('label', { class: 'lbl', text: 'فایل پاسخ (اختیاری: PDF، HTML، تصویر · حداکثر ۸ مگابایت)' }), fi), btn));
+      if (qs.length) {
+        box.append(sectionHead('سؤالات'));
+        qs.forEach(function (q, i) {
+          box.append(h('div', { class: 'qcard' }, h('div', { class: 'qt', text: fa(i + 1) + '. ' + q.q }), h('div', { class: 'sub', style: 'margin:-6px 0 8px', text: 'بارم: ' + num(q.points) }), tas[i]));
+        });
+        box.append(h('div', { class: 'card' }, h('div', { class: 'field' }, h('label', { class: 'lbl', text: 'فایل پیوست (اختیاری: عکس دست‌نوشته، PDF · حداکثر ۸ مگابایت)' }), fi), btn));
+      } else {
+        box.append(h('div', { class: 'card' }, h('h3', { text: s && s.submitted ? 'ویرایش پاسخ' : 'پاسخ شما' }), h('div', { class: 'field' }, ta),
+          h('div', { class: 'field' }, h('label', { class: 'lbl', text: 'فایل پاسخ (اختیاری: PDF، HTML، تصویر · حداکثر ۸ مگابایت)' }), fi), btn));
+      }
     });
   };
 
@@ -754,7 +827,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
       r.questions.forEach(function (q, i) { if (ans[i] == null) ans[i] = -1; });
       var deadline = r.remainingSec == null ? null : Date.now() + r.remainingSec * 1000, submitting = false, iv = null;
       box.textContent = '';
-      setTop({ title: e0.title, sub: 'در حال برگزاری' });
+      setTop({ title: e0.title, sub: 'در حال برگزاری' }); navHide = true; drawNav();
       var timerEl = h('div', { class: 'timer' }, ic('clock'), h('div', { class: 'grow sub', text: deadline ? 'زمان باقی‌مانده' : 'بدون محدودیت زمان' }), h('b', { text: deadline ? '' : '∞' }));
       var prog = h('div', { class: 'sub', style: 'text-align:center;margin:-4px 0 10px' });
       box.append(timerEl, prog);
@@ -968,6 +1041,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
   function nz(v) { v = String(v == null ? '' : v).trim(); return v; }
 
   VIEWS.t_home = function (box, p, X) {
+    ctx = null;
     setTop({ title: 'سلام ' + firstName(S.user.name), sub: 'پنل دبیر' });
     return call('lmsTeacherCourses').then(function (r) {
       if (!X.alive()) return;
@@ -1043,6 +1117,8 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
       }
       box.append(h('div', { class: 'chead', style: 'background:' + grad(c.lesson) }, h('div', { class: 'em', text: emoji(c.lesson) }), h('div', null, h('b', { text: c.lesson }), h('span', { text: 'کلاس ' + c.classCode + ' · ' + fa(r.students.length) + ' دانش‌آموز' }))), tabsEl, body);
       drawTabs(); drawBody();
+      ctx = { id: c.id, lesson: c.lesson, view: 't_course', setTab: function (k) { cur.p.tab = k; drawTabs(); drawBody(); drawNav(); window.scrollTo(0, 0); } };
+      drawNav();
     });
   };
 
@@ -1084,6 +1160,59 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
     });
   }
 
+
+  /* ----- سؤالات فعالیت: ورود دستی یا از فایل (docx / txt / csv) ----- */
+  function faToEn(s) { return String(s).replace(/[۰-۹]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); }); }
+  function parseActQuestions(text) {
+    var out = [], cur = null;
+    function pts(line) {
+      var m = line.match(/[(\[]\s*([\d۰-۹.]+)\s*نمره\s*[)\]]/);
+      if (!m) return { text: line, p: null };
+      return { text: line.replace(m[0], '').trim(), p: parseFloat(faToEn(m[1])) || null };
+    }
+    stripBom(text).split(/\r?\n/).forEach(function (raw) {
+      var line = raw.trim();
+      if (!line) { if (cur) cur.closed = true; return; }
+      var m = line.match(/^[\d۰-۹]+\s*[\)\.\-:ـ]\s*(.*)$/), x;
+      if (m) { x = pts(m[1]); cur = { q: x.text, points: x.p || 1 }; out.push(cur); }
+      else if (cur && !cur.closed) { x = pts(line); cur.q += '\n' + x.text; if (x.p) cur.points = x.p; }
+      else { x = pts(line); cur = { q: x.text, points: x.p || 1 }; out.push(cur); }
+    });
+    return out.filter(function (q) { return q.q.trim(); }).map(function (q) { return { q: q.q.trim(), points: q.points }; });
+  }
+  function parseActCsv(text) {
+    var rows = parseCsvRows(text), out = [];
+    rows.forEach(function (r, i) {
+      var q = String(r[0] || '').trim(); if (!q || (i === 0 && /سؤال|سوال|question/i.test(q))) return;
+      out.push({ q: q, points: parseFloat(faToEn(r[1] || '')) || 1 });
+    });
+    return out;
+  }
+  function parseCsvRows(text) {
+    text = stripBom(text);
+    var first = text.split(/\r?\n/)[0] || '', d = (first.split('\t').length > 1) ? '\t' : (first.split(';').length > first.split(',').length ? ';' : ',');
+    var rows = [], row = [], cell = '', inQ = false;
+    for (var i = 0; i < text.length; i++) {
+      var ch = text[i];
+      if (inQ) { if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else inQ = false; } else cell += ch; }
+      else if (ch === '"') inQ = true;
+      else if (ch === d) { row.push(cell); cell = ''; }
+      else if (ch === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
+      else if (ch !== '\r') cell += ch;
+    }
+    if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+    return rows;
+  }
+  function importActFile(f) {
+    var ext = (f.name.match(/\.([a-z0-9]+)$/i) || [, ''])[1].toLowerCase();
+    if (ext === 'docx') return f.arrayBuffer().then(docxText).then(parseActQuestions);
+    return f.arrayBuffer().then(function (b) { var t = new TextDecoder('utf-8').decode(b); return ext === 'csv' || ext === 'tsv' ? parseActCsv(t) : parseActQuestions(t); });
+  }
+  function sampleActCsv() {
+    var rows = [['سؤال', 'بارم'], ['مفهوم تابع را با یک مثال توضیح دهید.', '3'], ['حاصل عبارت ۲x+۳ را به ازای x=۴ بنویسید.', '2']];
+    downloadBlob(new Blob(['﻿' + rows.map(function (r) { return r.join(','); }).join('\r\n')], { type: 'text/csv;charset=utf-8' }), 'نمونه-سوالات-فعالیت.csv');
+  }
+
   /* ----- فرم فعالیت ----- */
   VIEWS.t_act_form = function (box, p, X) {
     var a = p.a || {};
@@ -1096,15 +1225,42 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
     var closed = h('input', { type: 'checkbox', checked: a.status === 'closed' }), rm = h('input', { type: 'checkbox' });
     var dirty = false; box.addEventListener('input', function () { dirty = true; });
     X.setGuard(function () { return !dirty || window.confirm('تغییرات ذخیره نشده از بین می‌رود. خارج می‌شوید؟'); });
+    var qs = (a.questions || []).map(function (q) { return { q: q.q, points: q.points }; }), qlist = h('div'), total = h('span', { class: 'badge b-pri' });
+    function drawQs() {
+      qlist.textContent = ''; var sum = 0;
+      qs.forEach(function (q, i) {
+        var qt = h('textarea', { class: 'inp', rows: '2', placeholder: 'متن سؤال', value: q.q }); qt.addEventListener('input', function () { q.q = qt.value; });
+        var pt = inp({ type: 'number', inputmode: 'decimal', value: q.points, style: 'width:80px', step: 'any', min: '0' }); pt.addEventListener('input', function () { q.points = parseFloat(pt.value) || 0; upd(); });
+        sum += parseFloat(q.points) || 0;
+        qlist.append(h('div', { class: 'qb' }, h('div', { class: 'qh' }, h('span', { text: 'سؤال ' + fa(i + 1) }), h('button', { class: 'ibtn sm', type: 'button', 'aria-label': 'حذف سؤال', onclick: function () { qs.splice(i, 1); drawQs(); } }, ic('trash'))), qt,
+          h('div', { class: 'row', style: 'margin-top:6px;gap:8px' }, h('span', { class: 'grow' }), h('span', { class: 'sub', text: 'بارم:' }), pt)));
+      });
+      upd(); max.disabled = qs.length > 0;
+      function upd() { var s2 = qs.reduce(function (t2, q) { return t2 + (parseFloat(q.points) || 0); }, 0); total.textContent = 'مجموع بارم: ' + num(s2); if (qs.length) max.value = Math.round(s2 * 100) / 100; }
+    }
+    drawQs();
+    var qpaste = h('textarea', { class: 'inp', rows: '5', placeholder: '۱. سؤال اول (۲ نمره)\n۲. سؤال دوم …' });
+    var qcard = h('div', { class: 'card' }, h('h3', { text: 'سؤالات فعالیت (اختیاری)' }),
+      h('div', { class: 'sub', style: 'margin-bottom:8px', text: 'اگر سؤال بگذارید، دانش‌آموز زیر هر سؤال پاسخ می‌نویسد و شما برای هر پاسخ نمره می‌دهید. بارم کل فعالیت خودکار جمع بارم سؤالات می‌شود.' }),
+      qlist, h('div', { class: 'row', style: 'gap:8px;margin-bottom:10px' }, h('button', { class: 'btn sm', type: 'button', text: '+ افزودن سؤال', onclick: function () { qs.push({ q: '', points: 1 }); dirty = true; drawQs(); } }), total),
+      h('div', { class: 'lbl', text: 'ورود گروهی از فایل Word / txt / CSV' }),
+      h('input', { type: 'file', accept: '.docx,.txt,.csv,.tsv', onchange: function () {
+        var f = this.files[0], el = this; if (!f) return;
+        importActFile(f).then(function (got) { el.value = ''; if (!got.length) return toast('سؤالی در فایل پیدا نشد؛ قالب را بررسی کنید.', 'er'); qs = qs.concat(got); dirty = true; drawQs(); toast(fa(got.length) + ' سؤال از فایل اضافه شد ✅', 'ok'); }).catch(function (er) { toast(er.message || 'خواندن فایل ناموفق بود.', 'er'); });
+      } }),
+      h('div', { class: 'sub', style: 'margin:6px 0', text: 'در Word/txt هر سؤال را با شماره شروع کنید و بارم را در پرانتز بنویسید: «۱. تابع را تعریف کنید. (۲ نمره)». در CSV دو ستون: سؤال، بارم.' }),
+      h('button', { class: 'btn sm', type: 'button', text: 'دانلود نمونهٔ CSV', onclick: sampleActCsv }),
+      h('details', { style: 'margin-top:10px' }, h('summary', { class: 'sub', text: 'یا متن سؤالات را اینجا بچسبانید' }), qpaste,
+        h('button', { class: 'btn sm', type: 'button', style: 'margin-top:8px', text: 'تبدیل به سؤال', onclick: function () { var got = parseActQuestions(qpaste.value); if (!got.length) return toast('سؤالی پیدا نشد.', 'er'); qs = qs.concat(got); qpaste.value = ''; dirty = true; drawQs(); toast(fa(got.length) + ' سؤال اضافه شد ✅', 'ok'); } })));
     var btn = h('button', { class: 'btn pri block', text: 'ذخیره' });
     btn.addEventListener('click', function () {
       busy(btn, true, 'در حال ذخیره…');
       readFile(fi).then(function (f) {
-        return call('lmsSaveActivity', { id: a.id, courseId: p.courseId, title: title.value, desc: desc.value, dueDate: due.value, maxScore: max.value, status: closed.checked ? 'closed' : 'open', file: f, removeFile: rm.checked });
+        return call('lmsSaveActivity', { id: a.id, courseId: p.courseId, title: title.value, desc: desc.value, dueDate: due.value, maxScore: max.value, status: closed.checked ? 'closed' : 'open', file: f, removeFile: rm.checked, questions: qs });
       }).then(function () { dirty = false; toast('ذخیره شد ✅', 'ok'); history.back(); }).catch(function (e) { busy(btn, false); toast(e.message, 'er'); });
     });
     box.append(h('div', { class: 'card' }, field('عنوان', title), field('توضیحات', desc),
-      h('div', { class: 'two' }, field('مهلت تحویل', due), field('بارم', max)),
+      h('div', { class: 'two' }, field('مهلت تحویل', due), field('بارم', max))), qcard, h('div', { class: 'card' },
       field('فایل فعالیت (PDF یا HTML تعاملی یا تصویر · حداکثر ۸ مگابایت)', fi),
       a.hasFile ? h('label', { class: 'sw', style: 'margin-bottom:10px' }, rm, 'حذف فایل فعلی (' + (a.fileName || '') + ')') : null,
       h('label', { class: 'sw', style: 'margin-bottom:14px' }, closed, 'بستن فعالیت (دانش‌آموزان دیگر نمی‌توانند ارسال کنند)'), btn,
@@ -1147,18 +1303,41 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
       setTop({ title: row.name, sub: a.title });
       box.textContent = '';
       box.append(h('div', { class: 'row', style: 'justify-content:center;margin-bottom:10px' }, avatar(row.name, row.studentCode, 'big pf')));
+      var qs = a.questions || [];
       if (!s || !s.submittedAt) box.append(h('div', { class: 'note wr', text: 'این دانش‌آموز هنوز پاسخی تحویل نداده است؛ در صورت نیاز می‌توانید مستقیم نمره ثبت کنید.' }));
-      else box.append(h('div', { class: 'card' }, h('h3', { text: 'پاسخ دانش‌آموز' }), h('div', { class: 'sub', text: fmtDT(s.submittedAt) + (row.late ? ' · با تأخیر' : '') }),
-        s.text ? h('div', { class: 'desc', style: 'margin-top:8px', text: s.text }) : h('div', { class: 'sub', style: 'margin-top:8px', text: 'متنی ارسال نشده است.' }),
-        s.hasFile ? h('div', { class: 'filebox', style: 'margin-top:8px' }, h('span', { text: fileTypeIcon(s.fileType) }), h('div', { class: 'grow sub', text: s.fileName }), fileBtn('submission', s.id, s.fileName, s.fileType)) : null));
-      var sc = inp({ type: 'number', inputmode: 'decimal', min: '0', max: String(a.maxScore), step: 'any', value: s && s.score != null ? s.score : '', placeholder: '۰ تا ' + a.maxScore });
+      else {
+        var ans = h('div', { class: 'card' }, h('h3', { text: 'پاسخ دانش‌آموز' }), h('div', { class: 'sub', text: fmtDT(s.submittedAt) + (row.late ? ' · با تأخیر' : '') }));
+        if (!qs.length) ans.append(s.text ? h('div', { class: 'desc', style: 'margin-top:8px', text: s.text }) : h('div', { class: 'sub', style: 'margin-top:8px', text: 'متنی ارسال نشده است.' }));
+        else if (s.text) ans.append(h('div', { class: 'desc', style: 'margin-top:8px', text: s.text }));
+        if (s.hasFile) ans.append(h('div', { class: 'filebox', style: 'margin-top:8px' }, h('span', { text: fileTypeIcon(s.fileType) }), h('div', { class: 'grow sub', text: s.fileName }), fileBtn('submission', s.id, s.fileName, s.fileType)));
+        box.append(ans);
+      }
       var fb = h('textarea', { class: 'inp', maxlength: '1500', placeholder: 'بازخورد برای دانش‌آموز (اختیاری)', value: s ? s.feedback : '' });
-      var btn = h('button', { class: 'btn good block', text: 'ثبت نمره' });
+      var btn = h('button', { class: 'btn good block', text: 'ثبت نمره' }), getArgs;
+      if (qs.length) {
+        var ins = [], totalEl = h('b', { style: 'font-size:1.2rem' });
+        function upd() { var tot = 0; ins.forEach(function (x) { tot += parseFloat(x.value) || 0; }); totalEl.textContent = num(tot) + ' از ' + num(a.maxScore); }
+        box.append(sectionHead('پاسخ‌ها و نمره هر سؤال'));
+        qs.forEach(function (q, i) {
+          var ip = h('input', { class: 'gin', type: 'number', inputmode: 'decimal', step: 'any', min: '0', max: String(q.points), value: s && s.qScores && s.qScores[i] != null ? s.qScores[i] : '', 'aria-label': 'نمرهٔ سؤال ' + (i + 1) });
+          ip.addEventListener('input', function () { var v = parseFloat(ip.value); ip.classList.toggle('bad', !isNaN(v) && (v < 0 || v > q.points)); upd(); });
+          ins.push(ip);
+          box.append(h('div', { class: 'qcard' }, h('div', { class: 'qt', text: fa(i + 1) + '. ' + q.q }),
+            h('div', { class: 'desc', style: 'background:#f8f7ff;border-radius:12px;padding:8px 10px', text: (s && s.answers && s.answers[i]) || '— بدون پاسخ —' }),
+            h('div', { class: 'row', style: 'margin-top:8px;gap:8px' }, h('span', { class: 'grow sub', text: 'بارم: ' + num(q.points) }), h('span', { class: 'sub', text: 'نمره:' }), ip)));
+        });
+        upd();
+        box.append(h('div', { class: 'card' }, h('div', { class: 'row' }, h('span', { class: 'grow title', text: 'نمرهٔ کل' }), totalEl), field('بازخورد', fb), btn));
+        getArgs = function () { return ['', fb.value, ins.map(function (x) { return x.value; })]; };
+      } else {
+        var sc = inp({ type: 'number', inputmode: 'decimal', min: '0', max: String(a.maxScore), step: 'any', value: s && s.score != null ? s.score : '', placeholder: '۰ تا ' + a.maxScore });
+        box.append(h('div', { class: 'card' }, h('h3', { text: 'نمره (از ' + num(a.maxScore) + ')' }), field('نمره', sc), field('بازخورد', fb), btn));
+        getArgs = function () { return [sc.value, fb.value, null]; };
+      }
       btn.addEventListener('click', function () {
-        busy(btn, true);
-        call('lmsGradeSubmission', a.id, row.studentCode, sc.value, fb.value).then(function () { toast('نمره ثبت شد ✅', 'ok'); history.back(); }).catch(function (e) { busy(btn, false); toast(e.message, 'er'); });
+        busy(btn, true); var g = getArgs();
+        call('lmsGradeSubmission', a.id, row.studentCode, g[0], g[1], g[2]).then(function () { toast('نمره ثبت شد ✅', 'ok'); history.back(); }).catch(function (e) { busy(btn, false); toast(e.message, 'er'); });
       });
-      box.append(h('div', { class: 'card' }, h('h3', { text: 'نمره (از ' + num(a.maxScore) + ')' }), field('نمره', sc), field('بازخورد', fb), btn));
     });
   };
 
