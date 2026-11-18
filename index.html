@@ -218,6 +218,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
 @keyframes pulse{50%{opacity:.25}}
 .rec b{font-variant-numeric:tabular-nums;flex:1}
 .composer .btn.rd{background:#ef4444;color:#fff;border:0}
+.tabs{overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{flex:1 0 auto!important;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -604,6 +605,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
         var chips = h('div', { class: 'chips' });
         if (c.pendingActivities) chips.append(h('span', { class: 'chip', text: fa(c.pendingActivities) + ' فعالیت' }));
         if (c.openExams) chips.append(h('span', { class: 'chip', text: fa(c.openExams) + ' آزمون' }));
+        if (c.live) chips.append(h('span', { class: 'chip hot', text: '🔴 کلاس زنده' }));
         if (c.unread) chips.append(h('span', { class: 'chip hot', text: fa(c.unread) + ' پیام جدید' }));
         g.append(h('button', { class: 'ctile', style: 'background:' + grad(c.lesson), onclick: function () { nav('s_course', { id: c.id, tab: 'act', lesson: c.lesson }); } },
           h('div', { class: 'em', text: emoji(c.lesson) }), h('div', null, h('b', { text: c.lesson }), h('div', { class: 't2', text: 'دبیر: ' + (c.teacherName || '—') })), chips));
@@ -612,7 +614,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
     });
   };
 
-  var S_TABS = [['act', 'فعالیت‌ها', 'clip'], ['exam', 'آزمون‌ها', 'star'], ['grades', 'نمرات', 'chart'], ['chat', 'پیام‌ها', 'chat']];
+  var S_TABS = [['act', 'فعالیت‌ها', 'clip'], ['exam', 'آزمون‌ها', 'star'], ['grades', 'نمرات', 'chart'], ['chat', 'پیام‌ها', 'chat'], ['live', 'کلاس مجازی', 'users']];
   VIEWS.s_course = function (box, p, X) {
     setTop({ title: p.lesson || 'کلاس', sub: '' });
     return call('lmsStudentCourse', p.id).then(function (r) {
@@ -633,7 +635,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
         body.textContent = '';
         leaveFns.forEach(function (f) { try { f(); } catch (e) {} }); leaveFns = [];
         var t = cur.p.tab || 'act';
-        if (t === 'act') sActs(body, r, c); else if (t === 'exam') sExams(body, r, c); else if (t === 'grades') sGrades(body, r); else sChat(body, X, c);
+        if (t === 'act') sActs(body, r, c); else if (t === 'exam') sExams(body, r, c); else if (t === 'grades') sGrades(body, r); else if (t === 'live') sLive(body, X, c); else sChat(body, X, c);
       }
       box.append(h('div', { class: 'chead', style: 'background:' + grad(c.lesson) }, h('div', { class: 'em', text: emoji(c.lesson) }), h('div', null, h('b', { text: c.lesson }), h('span', { text: 'کلاس درس · ' + (c.teacherName || '') }))), tabsEl, body);
       drawTabs(); drawBody();
@@ -812,6 +814,146 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
     }
   };
 
+  /* ================= کلاس مجازی (مشترک) ================= */
+  function liveBadge(st) { return st === 'live' ? badge('b-bad', '🔴 زنده') : badge('b-gray', 'پایان یافته'); }
+
+  function liveTab(body, X, c, isT) {
+    var wrap = h('div'); body.append(wrap); skeleton(wrap);
+    function load() {
+      call('lmsLiveList', c.id).then(function (r) {
+        if (!X.alive()) return;
+        wrap.textContent = '';
+        var now = r.sessions.filter(function (s) { return s.status === 'live'; })[0];
+        if (isT && !now) {
+          var title = inp({ placeholder: 'عنوان جلسه (اختیاری)', maxlength: '120' }), link = inp({ type: 'url', dir: 'ltr', placeholder: 'لینک جلسه (اختیاری؛ خالی = ساخت خودکار Jitsi)' });
+          var btn = h('button', { class: 'btn pri block', text: 'شروع کلاس مجازی' });
+          btn.addEventListener('click', function () {
+            busy(btn, true);
+            call('lmsLiveStart', c.id, title.value, link.value).then(function (res) { toast('کلاس مجازی شروع شد ✅', 'ok'); nav('t_live', { id: res.id }); }).catch(function (e) { busy(btn, false); toast(e.message, 'er'); });
+          });
+          wrap.append(h('div', { class: 'card' }, h('h3', { text: '🎥 شروع کلاس زنده' }), field('عنوان', title), field('لینک جلسه', link), btn,
+            h('div', { class: 'note in', style: 'margin-top:10px', text: 'اگر لینک ندهید، یک اتاق Jitsi با آدرس غیرقابل‌حدس ساخته می‌شود. دانش‌آموزان فقط با دکمهٔ «ورود» از داخل همین کلاس وارد می‌شوند و حضورشان ثبت می‌شود. می‌توانید لینک Google Meet و … هم بدهید.' })));
+        }
+        if (now) {
+          wrap.append(h('div', { class: 'card', style: 'border:2px solid #fca5a5;background:#fef2f2' }, h('div', { class: 'row' }, h('div', { class: 'grow' }, h('b', { text: '🔴 ' + now.title }), h('div', { class: 'sub', text: 'شروع: ' + fmtDT(now.startedAt) + (isT ? ' · ' + fa(now.present) + ' نفر حاضر' : '') })),
+            h('button', { class: 'btn pri', text: isT ? 'ورود به اتاق کلاس' : 'ورود به کلاس', onclick: function () { nav(isT ? 't_live' : 's_live', { id: now.id }); } }))));
+        } else if (!isT) wrap.append(h('div', { class: 'note in', text: 'در حال حاضر کلاس زنده‌ای برگزار نمی‌شود. وقتی معلم کلاس را شروع کند، همین‌جا دکمهٔ ورود می‌آید.' }));
+        var past = r.sessions.filter(function (s) { return s.status !== 'live'; });
+        if (past.length) wrap.append(sectionHead('جلسه‌های قبلی'));
+        past.forEach(function (s) {
+          wrap.append(h('button', { class: 'item', onclick: function () { nav(isT ? 't_live' : 's_live', { id: s.id }); } }, h('div', { class: 'em em-pri', text: '🎥' }),
+            h('div', { class: 'grow' }, h('div', { class: 'title', text: s.title }), h('div', { class: 'sub', text: fmtDT(s.startedAt) + (s.hasFile ? ' · فایل دارد' : '') })),
+            isT ? badge('b-info', fa(s.present) + ' حاضر') : (s.attended ? badge('b-good', 'حاضر بودید') : badge('b-gray', 'غایب'))));
+        });
+        if (!r.sessions.length && !isT) wrap.append(emptyBox('🎥', 'هنوز جلسه‌ای برگزار نشده است.'));
+      }).catch(function (e) { if (X.alive() && !(e && e.code === 'AUTH')) { wrap.textContent = ''; wrap.append(errBox(e, function () { skeleton(wrap); load(); })); } });
+    }
+    load();
+    // اگر معلم جلسه را شروع کرد، دانش‌آموز بدون تازه‌سازی ببیند
+    if (!isT) { var iv = setInterval(function () { if (!document.hidden) load(); }, 20000); X.onLeave(function () { clearInterval(iv); }); }
+  }
+  function sLive(body, X, c) { liveTab(body, X, c, false); }
+  function tLive(body, X, c) { liveTab(body, X, c, true); }
+
+  function liveRoom(box, p, X) {
+    var isT = S.role === 'teacher', cur = null, sigs = {};
+    return call('lmsLiveState', p.id).then(function (st) {
+      if (!X.alive()) return;
+      cur = st; if (isT) ensurePhotos(st.live.courseId);
+      setTop({ title: st.live.title, sub: st.live.lesson });
+      box.textContent = '';
+      var head = h('div', { class: 'card' }), people = h('div'), list = h('div', { class: 'chat' }), ta = h('textarea', { rows: '1', maxlength: '500', placeholder: 'پیام یا سؤال برای کلاس…' });
+      var send = h('button', { class: 'btn pri', type: 'button', 'aria-label': 'ارسال' }, ic('send'));
+      var comp = h('div', { class: 'composer' }, ta, send);
+
+      function reloadNow() { return call('lmsLiveState', p.id).then(function (s) { if (X.alive()) { cur = s; paint(); } }).catch(function () {}); }
+
+      function drawHead() {
+        var l = cur.live; head.textContent = '';
+        head.append(h('div', { class: 'row', style: 'flex-wrap:wrap;gap:8px' }, liveBadge(l.status), h('span', { class: 'sub', text: 'شروع: ' + fmtDT(l.startedAt) + (l.endedAt ? ' · پایان: ' + fmtDT(l.endedAt) : '') })));
+        if (l.status === 'live') {
+          head.append(h('button', { class: 'btn pri block', style: 'margin-top:10px', onclick: function () {
+            var w = null; try { w = window.open('about:blank', '_blank'); } catch (e) {}
+            call('lmsLiveJoin', l.id).then(function (r) { if (w) w.location.href = r.link; else window.location.href = r.link; reloadNow(); })
+              .catch(function (e) { if (w) w.close(); toast(e.message, 'er'); });
+          } }, ic('eye'), isT ? 'ورود به جلسهٔ تصویری (به‌عنوان معلم)' : 'ورود به جلسهٔ تصویری'));
+          head.append(h('div', { class: 'sub', style: 'margin-top:6px;text-align:center', text: 'در اندروید ممکن است از شما نصب برنامهٔ Jitsi Meet خواسته شود؛ بعد از ورود به این صفحه برگردید.' }));
+        }
+        if (l.hasFile) head.append(h('div', { class: 'filebox', style: 'margin-top:10px' }, h('span', { text: fileTypeIcon(l.fileType) }), h('div', { class: 'grow sub', text: l.fileName }), fileBtn('live', l.id, l.fileName, l.fileType, 'مشاهدهٔ فایل کلاس')));
+        if (!isT && l.status === 'live') {
+          head.append(h('button', { class: 'btn block' + (cur.handUp ? ' good' : ''), style: 'margin-top:10px', text: cur.handUp ? '✋ دستم بالاست (لغو)' : '✋ دست بالا (اجازهٔ صحبت)', onclick: function () {
+            call('lmsLiveSend', l.id, cur.handUp ? 'hand_off' : 'hand').then(reloadNow).catch(function (e) { toast(e.message, 'er'); });
+          } }));
+        }
+        if (isT && l.status === 'live') {
+          var fi = h('input', { type: 'file', accept: '.pdf,.html,.htm,.png,.jpg,.jpeg,.webp,.txt' });
+          var up = h('button', { class: 'btn sm', type: 'button', text: l.hasFile ? 'تعویض فایل' : 'بارگذاری فایل' });
+          up.addEventListener('click', function () {
+            busy(up, true, 'در حال ارسال…');
+            readFile(fi).then(function (f) { if (!f) throw new Error('ابتدا فایل را انتخاب کنید.'); return call('lmsLiveSetFile', l.id, f); })
+              .then(function () { toast('فایل برای دانش‌آموزان قرار گرفت ✅', 'ok'); return reloadNow(); }).catch(function (e) { busy(up, false); toast(e.message, 'er'); });
+          });
+          head.append(h('div', { style: 'margin-top:12px;border-top:1px solid var(--line);padding-top:10px' }, h('label', { class: 'lbl', text: 'فایل درس (PDF، HTML تعاملی، تصویر)' }), fi,
+            h('div', { class: 'row', style: 'gap:8px;margin-top:8px' }, up, l.hasFile ? h('button', { class: 'btn sm bad', type: 'button', text: 'حذف فایل', onclick: function () { call('lmsLiveSetFile', l.id, null, true).then(reloadNow).catch(function (e) { toast(e.message, 'er'); }); } }) : null)));
+          head.append(h('div', { class: 'row', style: 'gap:8px;margin-top:12px' },
+            h('button', { class: 'btn sm', type: 'button', text: 'کپی لینک جلسه', onclick: function () { try { navigator.clipboard.writeText(cur.link); toast('لینک کپی شد.', 'ok'); } catch (e) { toast(cur.link); } } }),
+            h('button', { class: 'btn sm bad', type: 'button', text: 'پایان کلاس', onclick: function () {
+              ask('کلاس مجازی پایان یابد؟ دانش‌آموزان دیگر نمی‌توانند وارد شوند.', 'پایان کلاس', true).then(function (y) { if (y) call('lmsLiveEnd', l.id).then(function () { toast('کلاس پایان یافت.', 'ok'); reloadNow(); }).catch(function (e) { toast(e.message, 'er'); }); });
+            } })));
+        }
+      }
+      function drawPeople() {
+        people.textContent = '';
+        if (!isT) return;
+        if (cur.hands.length) {
+          people.append(sectionHead('✋ دست‌های بالا (' + fa(cur.hands.length) + ')'));
+          cur.hands.forEach(function (x) {
+            people.append(h('div', { class: 'item' }, avatar(x.name, x.code, 'sm'), h('div', { class: 'grow title', text: x.name }),
+              h('button', { class: 'btn sm', text: 'پایین آوردن', onclick: function () { call('lmsLiveSend', cur.live.id, 'clear', x.code).then(reloadNow).catch(function (e) { toast(e.message, 'er'); }); } })));
+          });
+        }
+        var pr = cur.students.filter(function (s) { return s.present; }).length;
+        var det = h('details', { class: 'card' }, h('summary', { style: 'font-weight:800', text: '👥 حضور و غیاب: ' + fa(pr) + ' از ' + fa(cur.students.length) + ' نفر' }));
+        cur.students.forEach(function (s) {
+          det.append(h('div', { class: 'row', style: 'padding:6px 0;border-top:1px solid var(--line)' }, avatar(s.name, s.code, 'sm'), h('div', { class: 'grow', text: s.name }), s.present ? badge('b-good', 'حاضر · ' + fmtDT(s.joinedAt)) : badge('b-gray', 'غایب')));
+        });
+        det.open = sigs.detOpen; det.addEventListener('toggle', function () { sigs.detOpen = det.open; });
+        people.append(det);
+      }
+      function drawChat() {
+        var msgs = cur.chat, sig = msgs.length + ':' + (msgs.length ? msgs[msgs.length - 1].id : '');
+        if (sig === sigs.chat) return; sigs.chat = sig;
+        var atBottom = (window.innerHeight + window.scrollY) >= document.body.scrollHeight - 160;
+        list.textContent = '';
+        if (!msgs.length) list.append(emptyBox('💬', 'گفتگوی کلاس خالی است؛ سؤال یا پیام خود را بنویسید.'));
+        msgs.forEach(function (m) {
+          list.append(h('div', { class: 'msg ' + (m.mine ? 'me' : 'you') }, h('b', { text: (m.teacher ? '👨‍🏫 ' : '') + m.senderName }), h('br'), m.text, h('small', { text: fmtDT(m.createdAt) })));
+        });
+        if (atBottom || !sigs.first) { sigs.first = 1; setTimeout(function () { window.scrollTo(0, document.body.scrollHeight); }, 30); }
+      }
+      function paint() {
+        var l = cur.live, hs = [l.status, l.fileName, cur.handUp, l.hasFile].join('|');
+        if (hs !== sigs.head) { if (sigs.head && sigs.head.split('|')[0] === 'live' && l.status === 'ended') toast('کلاس مجازی پایان یافت.'); sigs.head = hs; drawHead(); }
+        var ps = isT ? JSON.stringify([cur.hands, cur.students.map(function (s) { return s.present; })]) : '';
+        if (ps !== sigs.people) { sigs.people = ps; drawPeople(); }
+        drawChat();
+        comp.hidden = l.status !== 'live';
+      }
+      function doSend() {
+        var txt = ta.value.trim(); if (!txt) return; send.disabled = true;
+        call('lmsLiveSend', cur.live.id, 'msg', txt).then(function () { ta.value = ''; ta.style.height = ''; return reloadNow(); }).catch(function (e) { toast(e.message, 'er'); }).then(function () { send.disabled = false; ta.focus(); });
+      }
+      send.addEventListener('click', doSend);
+      ta.addEventListener('input', function () { ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 130) + 'px'; });
+      box.append(head, people, sectionHead('گفتگوی کلاس'), list, comp);
+      paint();
+      var iv = setInterval(function () { if (!document.hidden) reloadNow(); }, 5000);
+      X.onLeave(function () { clearInterval(iv); });
+    });
+  }
+  VIEWS.s_live = liveRoom;
+  VIEWS.t_live = liveRoom;
+
   /* ================= معلم ================= */
   function sectionHead(title, btn) { return h('div', { class: 'sec' }, h('h3', { text: title }), btn || null); }
   function inp(attrs) { return h('input', Object.assign({ class: 'inp' }, attrs)); }
@@ -841,6 +983,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
       function tile(c) {
         var chips = h('div', { class: 'chips' }, h('span', { class: 'chip', text: fa(c.students) + ' دانش‌آموز' }));
         if (c.toGrade) chips.append(h('span', { class: 'chip hot', text: fa(c.toGrade) + ' منتظر نمره' }));
+        if (c.live) chips.append(h('span', { class: 'chip hot', text: '🔴 زنده' }));
         if (c.unread) chips.append(h('span', { class: 'chip hot', text: fa(c.unread) + ' پیام' }));
         return h('button', { class: 'ctile', style: 'background:' + (c.status === 'active' ? grad(c.lesson) : 'linear-gradient(135deg,#9ca3af,#6b7280)'), onclick: function () { nav('t_course', { id: c.id, tab: 'act' }); } },
           h('div', { class: 'em', text: emoji(c.lesson) }), h('div', null, h('b', { text: c.lesson }), h('div', { class: 't2', text: 'کلاس ' + c.classCode + ' · ' + fa(c.activities) + ' فعالیت · ' + fa(c.exams) + ' آزمون' })), chips);
@@ -874,7 +1017,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
     });
   };
 
-  var T_TABS = [['act', 'فعالیت‌ها', 'clip'], ['exam', 'آزمون‌ها', 'star'], ['grades', 'دفتر نمرات', 'chart'], ['chat', 'پیام‌ها', 'chat']];
+  var T_TABS = [['act', 'فعالیت‌ها', 'clip'], ['exam', 'آزمون‌ها', 'star'], ['grades', 'دفتر نمرات', 'chart'], ['chat', 'پیام‌ها', 'chat'], ['live', 'کلاس مجازی', 'users']];
   VIEWS.t_course = function (box, p, X) {
     ensurePhotos(p.id);
     return call('lmsCourseOverview', p.id).then(function (r) {
@@ -896,7 +1039,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
       function drawBody() {
         body.textContent = ''; leaveFns.forEach(function (f) { try { f(); } catch (e) {} }); leaveFns = [];
         var t = cur.p.tab || 'act';
-        if (t === 'act') tActs(body, r); else if (t === 'exam') tExams(body, r); else if (t === 'grades') tGradebook(body, r, X); else tInbox(body, r, X);
+        if (t === 'act') tActs(body, r); else if (t === 'exam') tExams(body, r); else if (t === 'grades') tGradebook(body, r, X); else if (t === 'live') tLive(body, X, r.course); else tInbox(body, r, X);
       }
       box.append(h('div', { class: 'chead', style: 'background:' + grad(c.lesson) }, h('div', { class: 'em', text: emoji(c.lesson) }), h('div', null, h('b', { text: c.lesson }), h('span', { text: 'کلاس ' + c.classCode + ' · ' + fa(r.students.length) + ' دانش‌آموز' }))), tabsEl, body);
       drawTabs(); drawBody();
