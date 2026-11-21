@@ -227,7 +227,7 @@ td.ok{color:#047857;font-weight:800}td.no{color:#dc2626;font-weight:800}
 .bnav .nv.on::before{content:"";position:absolute;top:0;width:26px;height:3px;border-radius:0 0 4px 4px;background:var(--p)}
 body.has-nav .main{padding-bottom:84px}
 body.has-nav .composer{bottom:calc(60px + env(safe-area-inset-bottom))}
-body.has-nav .toast{bottom:86px!important}
+body.has-nav .toast{top:auto;bottom:86px;transform:translateY(14px)}body.has-nav .toast.show{transform:none}
 body.has-nav .tabs{display:none}
 
 /* ---- تقویم شمسی ---- */
@@ -271,6 +271,50 @@ body.study .topbar{background:var(--sg)!important}
 @keyframes float{50%{transform:translateY(-4px)}}
 body.has-nav .mus{bottom:82px}
 .pbar{height:10px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden;width:100%}.pbar i{display:block;height:100%;background:#fff;border-radius:99px;transition:width .3s}
+
+/* ===== بازگشت زیباتر ===== */
+.ibtn.bk{width:44px;height:44px;border-radius:50%;background:linear-gradient(145deg,rgba(255,255,255,.34),rgba(255,255,255,.12));border:1.5px solid rgba(255,255,255,.55);box-shadow:0 6px 14px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.45);backdrop-filter:blur(6px);transition:transform .18s,background .2s}
+.ibtn.bk .ic{width:22px;height:22px;stroke-width:2.6;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+.ibtn.bk:hover{background:rgba(255,255,255,.4)}
+.ibtn.bk:active{transform:translateX(4px) scale(.94)}
+.ibtn{transition:transform .15s,background .2s}
+
+/* ===== پنل معلم ===== */
+body.role-t{--p:#0f766e;--p2:#4f46e5;--bg:#f1f6f9}
+body.role-t .topbar{background:linear-gradient(135deg,#0f766e 0%,#4f46e5 70%,#7c3aed 120%);overflow:hidden;box-shadow:0 10px 28px rgba(15,118,110,.32)}
+body.role-t .topbar::before{content:'';position:absolute;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.09);inset-inline-start:-50px;top:-80px;pointer-events:none}
+body.role-t .topbar::after{content:'';position:absolute;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.07);inset-inline-end:30%;bottom:-70px;pointer-events:none}
+body.role-t .topbar>*{position:relative;z-index:1}
+body.role-t .btn.pri{background:linear-gradient(135deg,#0f766e,#4f46e5);box-shadow:0 10px 22px rgba(15,118,110,.3)}
+body.role-t .tab.on{background:linear-gradient(135deg,#0f766e,#4f46e5);box-shadow:0 8px 18px rgba(15,118,110,.3)}
+body.role-t .bar i{background:linear-gradient(90deg,#14b8a6,#4f46e5)}
+body.role-t .inp:focus{border-color:#0f766e;box-shadow:0 0 0 4px rgba(15,118,110,.14)}
+body.role-t .sw input{accent-color:#0f766e}
+body.role-t .em-pri{background:#ccfbf1;color:#0f766e}
+body.role-t .b-pri{background:#ccfbf1;color:#115e59}
+body.role-t .sec h3{position:relative;padding-inline-start:12px}
+body.role-t .sec h3::before{content:'';position:absolute;inset-inline-start:0;top:15%;bottom:15%;width:4px;border-radius:4px;background:linear-gradient(180deg,#14b8a6,#4f46e5)}
+body.role-t .item{border:1px solid #e6eef3;box-shadow:0 1px 2px rgba(15,40,60,.04),0 8px 20px rgba(15,40,60,.06);position:relative;overflow:hidden}
+body.role-t .item::before{content:'';position:absolute;inset-inline-start:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#14b8a6,#6366f1);opacity:.85}
+body.role-t .card{border:1px solid #e6eef3;box-shadow:0 1px 2px rgba(15,40,60,.04),0 8px 20px rgba(15,40,60,.06)}
+body.role-t .tabs{gap:8px}
+body.role-t .tab{border:1px solid #e3ecf1;box-shadow:none}
+body.role-t .tab.on{border-color:transparent}
+body.role-t .empty{border-color:#b9d8d4;background:linear-gradient(#fff,#f5fbfa)}
+
+/* آمار معلم */
+.tstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.tst{border-radius:20px;padding:12px 10px 11px;color:#fff;position:relative;overflow:hidden;box-shadow:0 12px 24px rgba(15,23,42,.16);text-align:right}
+.tst::after{content:'';position:absolute;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.16);inset-inline-start:-22px;bottom:-26px}
+.tst .ti{width:32px;height:32px;border-radius:11px;background:rgba(255,255,255,.24);display:grid;place-items:center;font-size:1.05rem;margin-bottom:6px}
+.tst b{display:block;font-size:1.5rem;font-weight:900;line-height:1.2}
+.tst span{font-size:.72rem;font-weight:700;opacity:.95}
+.thello{border-radius:22px;padding:14px 16px;margin-bottom:12px;background:linear-gradient(135deg,#ecfeff,#eef2ff);border:1px solid #d9e8f2;display:flex;align-items:center;gap:12px}
+.thello .te{font-size:2rem}
+.thello b{display:block;font-weight:900}
+.thello span{font-size:.8rem;color:var(--muted)}
+body.role-t .ctile{border:1px solid rgba(255,255,255,.18);box-shadow:0 16px 30px rgba(15,23,42,.18),inset 0 1px 0 rgba(255,255,255,.25)}
+body.role-t .ctile::before{content:'';position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.1);inset-inline-end:-30px;top:-34px}
 </style>
 </head>
 <body>
@@ -279,7 +323,7 @@ body.has-nav .mus{bottom:82px}
   <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
-  <symbol id="i-back" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" transform="scale(-1,1) translate(-24,0)"/><path d="M20 12H5" transform="scale(1)"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M4 12h15M13 5.5l6.5 6.5-6.5 6.5"/></symbol>
   <symbol id="i-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
@@ -523,8 +567,8 @@ body.has-nav .mus{bottom:82px}
     setTop_(o); drawNav();
   }
   function setTop_(o) {
-    var t = $('topbar'); t.textContent = '';
-    if (stack.length > 1) t.append(h('button', { class: 'ibtn', 'aria-label': 'بازگشت', onclick: back }, ic('back')));
+    var t = $('topbar'); t.textContent = ''; document.body.classList.toggle('role-t', S.role === 'teacher');
+    if (stack.length > 1) t.append(h('button', { class: 'ibtn bk', 'aria-label': 'بازگشت', onclick: back }, ic('back')));
     else t.append(avatar(firstName(S.user && S.user.name) || '؟', S.role === 'student' ? 'me' : '', 'big'));
     t.append(h('div', { class: 'ttl' }, h('b', { text: o.title || '' }), h('span', { text: o.sub || '' })));
     (o.actions || []).forEach(function (a) { t.append(a); });
@@ -1189,9 +1233,9 @@ body.has-nav .mus{bottom:82px}
   }
 
   /* ================= موسیقی ملایم (تولید زنده با Web Audio؛ بدون فایل صوتی) ================= */
-  var MUSIC_LIST = [['none', 'بدون موسیقی', '🔇'], ['calm', 'پیانوی آرام', '🎹'], ['dream', 'رؤیا (پد نرم)', '☁️'], ['rain', 'باران و پیانو', '🌧️'], ['ocean', 'موج دریا', '🌊'], ['lofi', 'لوفی ملایم', '🎧']];
+  var MUSIC_LIST = [['none', 'بدون موسیقی', '🔇'], ['nature', 'صدای طبیعت', '🌿'], ['lofi', 'لوفی ملایم', '🎧']];
   var Music = (function () {
-    var ac = null, master = null, fx = null, nbuf = null, cur = '', playing = '', timers = [], srcs = [], vol = 0.55, muted = false, pv = null;
+    var ac = null, master = null, fx = null, nbuf = null, cur = '', playing = '', timers = [], srcs = [], el = null, vol = 0.55, muted = false, pv = null;
     try { muted = localStorage.getItem('lms_music_off') === '1'; } catch (e) {}
     var PENTA = [0, 2, 4, 7, 9];
     function fr(n) { return 261.63 * Math.pow(2, n / 12); }
@@ -1229,24 +1273,9 @@ body.has-nav .mus{bottom:82px}
     function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
     function rnd(a) { return a[Math.floor(Math.random() * a.length)]; }
     var KINDS = {
-      calm: function (k) {
-        (function step() { if (playing !== k) return; var t = ac.currentTime + 0.05, n = rnd(PENTA) + rnd([0, 0, 12, 12, 24]);
-          note(fr(n), t, 3.4, 0.17, 'triangle'); if (Math.random() < 0.4) note(fr(n + rnd([7, 12])), t + 0.35, 3, 0.09, 'sine');
-          if (Math.random() < 0.25) note(fr(rnd([-24, -17, -12])), t, 5, 0.12, 'sine', 0.3);
-          later(step, 1500 + Math.random() * 2300); })();
-      },
-      dream: function (k) {
-        var ch = [[0, 4, 7, 11], [-3, 0, 4, 7], [-7, -3, 0, 4], [-5, -1, 2, 4]], i = 0;
-        (function step() { if (playing !== k) return; var t = ac.currentTime + 0.05; ch[i % 4].forEach(function (n, j) { pad(fr(n - 12), t + j * 0.18, 7.5, 0.05); }); pad(fr(ch[i % 4][0] - 24), t, 8, 0.06); i++; later(step, 6500); })();
-      },
-      rain: function (k) {
-        noise('bandpass', 1900, 0.5, 0.16); noise('highpass', 5000, 0.5, 0.025);
-        (function step() { if (playing !== k) return; var t = ac.currentTime + 0.05, n = rnd(PENTA) + rnd([12, 24]); note(fr(n), t, 3.6, 0.12, 'sine'); later(step, 3000 + Math.random() * 3500); })();
-      },
-      ocean: function (k) {
-        noise('lowpass', 650, 0.7, 0.13, { hz: 0.09, depth: 0.09 }); noise('lowpass', 1500, 0.5, 0.04, { hz: 0.13, depth: 0.03 });
-        drone(65.4, 0.035); drone(98, 0.025);
-        (function step() { if (playing !== k) return; var t = ac.currentTime + 0.05; note(fr(rnd([7, 12, 16, 19])), t, 4, 0.07, 'sine', 0.4); later(step, 6000 + Math.random() * 5000); })();
+      nature: function (k) {
+        el = new Audio('music-nature.mp3'); el.loop = true; el.preload = 'auto'; el.volume = level() * 0.9;
+        var p = el.play(); if (p && p.catch) p.catch(function () {});
       },
       lofi: function (k) {
         var prog = [[2, 5, 9, 12, 16], [-5, -1, 5, 9, 12], [0, 4, 7, 11, 14], [-3, 0, 4, 7, 11]], e = 0;
@@ -1261,14 +1290,16 @@ body.has-nav .mus{bottom:82px}
     };
     function halt() {
       timers.forEach(clearTimeout); timers = [];
+      if (el) { var oe = el; el = null; try { oe.pause(); oe.src = ''; } catch (e) {} }
       var old = srcs; srcs = [];
       setTimeout(function () { old.forEach(function (s) { try { s.stop(); } catch (e) {} }); }, 900);
     }
     function level() { return muted ? 0 : vol; }
+    function elVol() { if (el) el.volume = level() * 0.9; }
     function startKind() {
       if (!cur || !KINDS[cur] || !init()) return;
       if (ac.state === 'suspended') ac.resume();
-      if (playing === cur) { master.gain.setTargetAtTime(level(), ac.currentTime, 0.8); return; }
+      if (playing === cur) { master.gain.setTargetAtTime(level(), ac.currentTime, 0.8); elVol(); if (el && el.paused) { var pp = el.play(); if (pp && pp.catch) pp.catch(function () {}); } return; }
       halt(); playing = cur; KINDS[cur](cur); master.gain.setTargetAtTime(level(), ac.currentTime, 1.6);
     }
     function unlock() {
@@ -1279,9 +1310,9 @@ body.has-nav .mus{bottom:82px}
     return {
       get muted() { return muted; },
       state: function () { return { playing: playing, ac: ac && ac.state, srcs: srcs.length, timers: timers.length, gain: master && master.gain.value }; },
-      play: function (kind) { cur = KINDS[kind] ? kind : ''; if (!cur) return this.stop(); if (!muted) startKind(); },
+      play: function (kind) { if (kind && !KINDS[kind]) kind = 'nature'; cur = KINDS[kind] ? kind : ''; if (!cur) return this.stop(); if (!muted) startKind(); },
       stop: function () { cur = ''; playing = ''; if (ac && master) master.gain.setTargetAtTime(0, ac.currentTime, 0.25); halt(); clearTimeout(pv); pv = null; },
-      toggle: function () { muted = !muted; try { localStorage.setItem('lms_music_off', muted ? '1' : '0'); } catch (e) {} if (muted) { if (ac && master) master.gain.setTargetAtTime(0, ac.currentTime, 0.25); } else startKind(); return muted; },
+      toggle: function () { muted = !muted; try { localStorage.setItem('lms_music_off', muted ? '1' : '0'); } catch (e) {} if (muted) { if (ac && master) master.gain.setTargetAtTime(0, ac.currentTime, 0.25); elVol(); } else { startKind(); elVol(); } return muted; },
       preview: function (kind) {
         var on = pv != null; this.stop(); if (on || !KINDS[kind]) return false;
         var m = muted; muted = false; cur = kind; startKind(); muted = m;
@@ -1345,10 +1376,13 @@ body.has-nav .mus{bottom:82px}
       if (!X.alive()) return;
       box.textContent = '';
       var active = r.courses.filter(function (c) { return c.status === 'active'; }), arch = r.courses.filter(function (c) { return c.status !== 'active'; });
-      box.append(h('div', { class: 'pill-stats' },
-        h('div', { class: 'pstat' }, h('b', { style: 'color:#6d28d9', text: fa(active.length) }), h('span', { text: 'کلاس فعال' })),
-        h('div', { class: 'pstat' }, h('b', { style: 'color:#d97706', text: fa(r.totals.toGrade) }), h('span', { text: 'منتظر نمره' })),
-        h('div', { class: 'pstat' }, h('b', { style: 'color:#dc2626', text: fa(r.totals.unread) }), h('span', { text: 'پیام جدید' }))));
+      var hr = new Date().getHours(), greet = hr < 5 ? 'شب‌بخیر' : hr < 12 ? 'صبح‌بخیر' : hr < 17 ? 'ظهر‌بخیر' : hr < 20 ? 'عصر‌بخیر' : 'شب‌بخیر';
+      box.append(h('div', { class: 'thello' }, h('div', { class: 'te', text: hr < 17 && hr >= 5 ? '☀️' : '🌙' }), h('div', null, h('b', { text: greet + '، ' + firstName(S.user.name) }), h('span', { text: 'امروز هم کنار دانش‌آموزان هستید 🌱' }))));
+      function tst(bg, ic_, n, lab) { return h('div', { class: 'tst', style: 'background:' + bg }, h('div', { class: 'ti', text: ic_ }), h('b', { text: fa(n) }), h('span', { text: lab })); }
+      box.append(h('div', { class: 'tstats' },
+        tst('linear-gradient(135deg,#0d9488,#0891b2)', '🏫', active.length, 'کلاس فعال'),
+        tst('linear-gradient(135deg,#f59e0b,#ea580c)', '📝', r.totals.toGrade, 'منتظر نمره'),
+        tst('linear-gradient(135deg,#6366f1,#8b5cf6)', '💬', r.totals.unread, 'پیام جدید')));
       box.append(sectionHead('کلاس‌های من', h('button', { class: 'btn sm pri', onclick: function () { nav('t_newcourse'); } }, ic('plus'), 'کلاس جدید')));
       if (!active.length) box.append(emptyBox('🏫', 'هنوز کلاسی نساخته‌اید. با «کلاس جدید» شروع کنید.'));
       var g = h('div', { class: 'grid' });
