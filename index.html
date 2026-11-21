@@ -229,6 +229,48 @@ body.has-nav .main{padding-bottom:84px}
 body.has-nav .composer{bottom:calc(60px + env(safe-area-inset-bottom))}
 body.has-nav .toast{bottom:86px!important}
 body.has-nav .tabs{display:none}
+
+/* ---- تقویم شمسی ---- */
+.jov{position:fixed;inset:0;z-index:200;background:rgba(30,20,60,.5);display:flex;align-items:flex-end;justify-content:center;animation:fade .15s ease}
+.jsheet{background:#fff;width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
+.jhead{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.jtitle{flex:1;text-align:center;font-weight:800;font-size:1.05rem}
+.jnav{width:38px;height:38px;border-radius:12px;border:0;background:#f3eeff;color:var(--p);font-size:1.2rem;font-weight:800;cursor:pointer}
+.jgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;direction:rtl}
+.jw{text-align:center;font-size:.78rem;font-weight:800;color:#6b7280;padding:4px 0}.jw.fri{color:#dc2626}
+.jd{aspect-ratio:1;border:0;border-radius:50%;background:none;font:inherit;font-weight:700;cursor:pointer;color:var(--ink)}
+.jd.fri{color:#dc2626}.jd.today{box-shadow:inset 0 0 0 2px var(--p)}
+.jd.on{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;box-shadow:0 4px 12px rgba(91,33,182,.35)}
+.jtime{display:flex;align-items:center;gap:8px;margin-top:12px;justify-content:center;direction:rtl}.jtime .inp{width:84px;text-align:center}
+.jact{display:flex;gap:8px;margin-top:14px}.jact .btn{flex:1}
+.jbtn{text-align:right;cursor:pointer;display:block;width:100%;background:#fff}.jbtn .ph{color:#9ca3af}.jbtn .tm{color:#6b7280;font-size:.88rem}
+/* ---- فضای رنگی آزمون/فعالیت ---- */
+body.study{background:var(--sbg) fixed}
+body.study::before,body.study::after{content:"";position:fixed;border-radius:50%;pointer-events:none;z-index:0}
+body.study::before{width:300px;height:300px;top:-90px;left:-100px;background:radial-gradient(circle,var(--sa) 0,transparent 70%);opacity:.3}
+body.study::after{width:360px;height:360px;bottom:-130px;right:-120px;background:radial-gradient(circle,var(--sb) 0,transparent 70%);opacity:.28}
+body.study #app{position:relative;z-index:1}
+body.study .topbar{background:var(--sg)!important}
+.hero{background:var(--sg);color:#fff;border-radius:22px;padding:16px;margin-bottom:14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;box-shadow:0 10px 26px rgba(0,0,0,.14);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.14);top:-50px;left:-40px}
+.hero .he{font-size:2.3rem;width:58px;height:58px;border-radius:18px;background:rgba(255,255,255,.22);display:grid;place-items:center;flex-shrink:0}
+.hero .ht{flex:1;min-width:0}.hero .ht b{display:block;font-size:1.1rem;font-weight:800;overflow-wrap:anywhere}.hero .ht span{font-size:.82rem;opacity:.92}
+.hero .hc{display:flex;flex-wrap:wrap;gap:6px;width:100%;position:relative;z-index:1}
+.hero .hc .chip{background:rgba(255,255,255,.24);color:#fff;border-radius:99px;padding:3px 11px;font-size:.78rem;font-weight:700}
+.study .qcard{--qc:var(--sa);border-inline-start:7px solid var(--qc);box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.study .qcard:nth-child(5n+2){--qc:#ec4899}.study .qcard:nth-child(5n+3){--qc:#0ea5e9}.study .qcard:nth-child(5n+4){--qc:#f59e0b}.study .qcard:nth-child(5n+5){--qc:#10b981}
+.qn{display:inline-grid;place-items:center;min-width:28px;height:28px;padding:0 6px;border-radius:50%;background:var(--qc,var(--p));color:#fff;font-size:.8rem;margin-inline-end:8px;vertical-align:middle}
+.study .opt{border-color:#e7e3f7;background:#fff;padding:13px 14px;transition:transform .12s,background .15s}
+.study .opt:active{transform:scale(.98)}
+.study .opt.on{border-color:var(--qc);background:var(--qc);color:#fff}.study .opt.on .rd{background:#fff;border-color:#fff;color:var(--qc)}
+.study .inp{border-color:#e7e3f7}.study .inp:focus{border-color:var(--qc,var(--sa))}
+.study .timer{background:var(--sg);color:#fff}.study .timer .sub{color:#fff;opacity:.9}.study .timer b{color:#fff}
+.study .btn.good,.study .btn.pri{background:var(--sg)}
+.mus{position:fixed;left:14px;bottom:18px;z-index:45;width:48px;height:48px;border-radius:50%;border:0;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.2);font-size:1.4rem;cursor:pointer;animation:float 3s ease-in-out infinite}
+.mus.off{animation:none;opacity:.75}
+@keyframes float{50%{transform:translateY(-4px)}}
+body.has-nav .mus{bottom:82px}
+.pbar{height:10px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden;width:100%}.pbar i{display:block;height:100%;background:#fff;border-radius:99px;transition:width .3s}
 </style>
 </head>
 <body>
@@ -702,7 +744,7 @@ body.has-nav .tabs{display:none}
       else { st = 'تحویل نشده'; cls = 'b-warn'; }
       body.append(h('button', { class: 'item', onclick: function () { nav('s_activity', { courseId: c.id, id: a.id }); } },
         h('div', { class: 'em em-pri', text: a.hasFile ? fileTypeIcon(a.fileType) : '📝' }),
-        h('div', { class: 'grow' }, h('div', { class: 'title', text: a.title }), h('div', { class: 'sub', text: a.dueDate ? 'مهلت: ' + fmtDay(a.dueDate) : 'بدون مهلت' })),
+        h('div', { class: 'grow' }, h('div', { class: 'title', text: a.title }), h('div', { class: 'sub', text: (a.dueAt || a.dueDate) ? 'مهلت: ' + fmtDue(a) : 'بدون مهلت' })),
         badge(cls, st)));
     });
   }
@@ -752,9 +794,23 @@ body.has-nav .tabs{display:none}
       setTop({ title: a.title, sub: r.course.lesson });
       box.textContent = '';
       var qs = a.questions || [], s = a.sub;
-      var meta = h('div', { class: 'row', style: 'flex-wrap:wrap;gap:6px;margin-bottom:8px' },
-        badge('b-pri', 'بارم: ' + num(a.maxScore)), qs.length ? badge('b-warn', fa(qs.length) + ' سؤال') : null, a.dueDate ? badge(a.overdue ? 'b-bad' : 'b-info', 'مهلت: ' + fmtDay(a.dueDate)) : null, a.status !== 'open' ? badge('b-gray', 'بسته شده') : null);
-      box.append(h('div', { class: 'card' }, meta, a.desc ? h('div', { class: 'desc', text: a.desc }) : (qs.length ? null : h('div', { class: 'sub', text: 'توضیحی ثبت نشده است.' })),
+      studyStart(X, a.id, a.music);
+      var chips = [h('span', { class: 'chip', text: 'بارم: ' + num(a.maxScore) })];
+      if (qs.length) chips.push(h('span', { class: 'chip', text: fa(qs.length) + ' سؤال' }));
+      var cdChip = null;
+      if (a.dueAt || a.dueDate) { cdChip = h('span', { class: 'chip', text: 'مهلت: ' + fmtDue(a) }); chips.push(cdChip); }
+      if (a.status !== 'open') chips.push(h('span', { class: 'chip', text: '⛔ بسته شده' }));
+      box.append(hero(a.hasFile ? fileTypeIcon(a.fileType) : (qs.length ? '✏️' : '📝'), a.title, r.course.lesson, chips));
+      if (a.dueAt && a.status === 'open' && !(s && s.graded)) {
+        var cd = h('div', { class: 'note wr', style: 'font-weight:700;text-align:center' });
+        var tick = function () {
+          var ms = new Date(a.dueAt).getTime() - Date.now();
+          if (ms <= 0) { clearInterval(iv); toast('مهلت فعالیت تمام شد و بسته شد.'); if (X.alive()) swap('s_activity', p); return; }
+          cd.textContent = '⏳ زمان باقی‌مانده تا بسته شدن: ' + remainText(ms); cd.classList.toggle('er', ms < 600000);
+        };
+        var iv = setInterval(tick, 5000); tick(); X.onLeave(function () { clearInterval(iv); }); box.append(cd);
+      }
+      box.append(h('div', { class: 'card' }, a.desc ? h('div', { class: 'desc', text: a.desc }) : (qs.length ? h('div', { class: 'sub', text: 'به سؤالات زیر پاسخ دهید.' }) : h('div', { class: 'sub', text: 'توضیحی ثبت نشده است.' })),
         a.hasFile ? h('div', { class: 'filebox', style: 'margin-top:10px' }, h('span', { text: fileTypeIcon(a.fileType) }), h('div', { class: 'grow sub', text: a.fileName }), fileBtn('activity', a.id, a.fileName, a.fileType)) : null));
       if (s && s.graded) {
         box.append(h('div', { class: 'card result-big' }, h('div', { class: 'sub', text: 'نمرهٔ شما' }), h('div', { class: 'n', text: num(s.score) + ' / ' + num(a.maxScore) }),
@@ -796,7 +852,7 @@ body.has-nav .tabs{display:none}
       if (qs.length) {
         box.append(sectionHead('سؤالات'));
         qs.forEach(function (q, i) {
-          box.append(h('div', { class: 'qcard' }, h('div', { class: 'qt', text: fa(i + 1) + '. ' + q.q }), h('div', { class: 'sub', style: 'margin:-6px 0 8px', text: 'بارم: ' + num(q.points) }), tas[i]));
+          box.append(h('div', { class: 'qcard' }, h('div', { class: 'qt' }, h('span', { class: 'qn', text: fa(i + 1) }), q.q), h('div', { class: 'sub', style: 'margin:-6px 0 8px', text: 'بارم: ' + num(q.points) }), tas[i]));
         });
         box.append(h('div', { class: 'card' }, h('div', { class: 'field' }, h('label', { class: 'lbl', text: 'فایل پیوست (اختیاری: عکس دست‌نوشته، PDF · حداکثر ۸ مگابایت)' }), fi), btn));
       } else {
@@ -811,7 +867,8 @@ body.has-nav .tabs{display:none}
     setTop({ title: e0.title, sub: 'آزمون آنلاین' });
     box.textContent = '';
     var done = false;
-    box.append(h('div', { class: 'card' }, h('h3', { text: e0.title }),
+    studyStart(X, e0.id, e0.music);
+    box.append(hero('📝', e0.title, 'آزمون آنلاین'), h('div', { class: 'card' },
       h('div', { class: 'row', style: 'flex-wrap:wrap;gap:6px;margin:6px 0 10px' }, badge('b-pri', fa(e0.qCount) + ' سؤال'), e0.durationMin ? badge('b-warn', fa(e0.durationMin) + ' دقیقه') : badge('b-gray', 'بدون محدودیت زمان'), badge('b-info', 'بارم: ' + num(e0.maxScore))),
       h('div', { class: 'note wr', text: e0.state === 'inprogress' ? 'شما این آزمون را شروع کرده‌اید؛ زمان در حال گذر است.' : 'فقط یک‌بار می‌توانید در این آزمون شرکت کنید. بعد از زدن «شروع»، زمان شروع می‌شود و با بستن برنامه متوقف نمی‌شود.' }),
       h('button', { class: 'btn pri block', style: 'margin-top:12px', text: e0.state === 'inprogress' ? 'ادامهٔ آزمون' : 'شروع آزمون', onclick: function () { startExam(this); } })));
@@ -829,13 +886,13 @@ body.has-nav .tabs{display:none}
       box.textContent = '';
       setTop({ title: e0.title, sub: 'در حال برگزاری' }); navHide = true; drawNav();
       var timerEl = h('div', { class: 'timer' }, ic('clock'), h('div', { class: 'grow sub', text: deadline ? 'زمان باقی‌مانده' : 'بدون محدودیت زمان' }), h('b', { text: deadline ? '' : '∞' }));
-      var prog = h('div', { class: 'sub', style: 'text-align:center;margin:-4px 0 10px' });
+      var progT = h('span'), progB = h('i'), prog = h('div', { class: 'hero', style: 'padding:12px;gap:8px' }, h('div', { class: 'he', style: 'width:44px;height:44px;font-size:1.6rem', text: '📝' }), h('div', { class: 'ht' }, h('b', { text: e0.title }), progT), h('div', { class: 'pbar' }, progB));
       box.append(timerEl, prog);
       var qwrap = h('div'); box.append(qwrap);
       var submitBtn = h('button', { class: 'btn good block', text: 'پایان و ارسال پاسخ‌ها' });
       box.append(submitBtn);
       function save() { try { sessionStorage.setItem(key, JSON.stringify(ans)); } catch (x) {} }
-      function upd() { var n = ans.filter(function (a) { return a >= 0; }).length; prog.textContent = 'پاسخ داده‌شده: ' + fa(n) + ' از ' + fa(r.questions.length); }
+      function upd() { var n = ans.filter(function (a) { return a >= 0; }).length; progT.textContent = 'پاسخ داده‌شده: ' + fa(n) + ' از ' + fa(r.questions.length); progB.style.width = (r.questions.length ? n / r.questions.length * 100 : 0) + '%'; }
       r.questions.forEach(function (q, i) {
         var opts = h('div');
         q.options.forEach(function (o, j) {
@@ -846,7 +903,7 @@ body.has-nav .tabs{display:none}
           });
           opts.append(b);
         });
-        qwrap.append(h('div', { class: 'qcard' }, h('div', { class: 'qt', text: fa(i + 1) + '. ' + q.q }), h('div', { class: 'sub', style: 'margin:-6px 0 8px', text: 'بارم: ' + num(q.points) }), opts));
+        qwrap.append(h('div', { class: 'qcard' }, h('div', { class: 'qt' }, h('span', { class: 'qn', text: fa(i + 1) }), q.q), h('div', { class: 'sub', style: 'margin:-6px 0 8px', text: 'بارم: ' + num(q.points) }), opts));
       });
       upd();
       X.setGuard(function () { return done || window.confirm('آزمون در حال برگزاری است و زمان ادامه دارد. خارج می‌شوید؟'); });
@@ -877,7 +934,7 @@ body.has-nav .tabs{display:none}
         box.append(h('div', { class: 'sec' }, h('h3', { text: 'مرور پاسخ‌ها' })));
         r.questions.forEach(function (q, i) {
           var rv = res.review[i];
-          box.append(h('div', { class: 'qcard' }, h('div', { class: 'qt', text: fa(i + 1) + '. ' + q.q }), q.options.map(function (o, j) {
+          box.append(h('div', { class: 'qcard' }, h('div', { class: 'qt' }, h('span', { class: 'qn', text: fa(i + 1) }), q.q), q.options.map(function (o, j) {
             var cls = 'opt'; if (rv.right === j) cls += ' right'; else if (rv.answer === j) cls += ' wrong';
             return h('div', { class: cls }, h('span', { class: 'rd', style: rv.right === j ? 'background:#10b981;border-color:#10b981' : (rv.answer === j ? 'background:#ef4444;border-color:#ef4444' : ''), text: rv.right === j ? '✓' : (rv.answer === j ? '✗' : '') }), h('span', { text: o }));
           })));
@@ -1027,6 +1084,247 @@ body.has-nav .tabs{display:none}
   VIEWS.s_live = liveRoom;
   VIEWS.t_live = liveRoom;
 
+  /* ================= تقویم شمسی ================= */
+  var JMONTHS = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
+  var JBREAKS = [-61, 9, 38, 199, 426, 686, 756, 818, 1111, 1181, 1210, 1635, 2060, 2097, 2192, 2262, 2324, 2394, 2456, 3178];
+  function jdiv(a, b) { return ~~(a / b); }
+  function jmod(a, b) { return a - ~~(a / b) * b; }
+  function jalCal(jy, noLeap) {
+    var bl = JBREAKS.length, gy = jy + 621, leapJ = -14, jp = JBREAKS[0], jm, jump = 0, leap, leapG, march, n, i;
+    for (i = 1; i < bl; i += 1) { jm = JBREAKS[i]; jump = jm - jp; if (jy < jm) break; leapJ = leapJ + jdiv(jump, 33) * 8 + jdiv(jmod(jump, 33), 4); jp = jm; }
+    n = jy - jp; leapJ = leapJ + jdiv(n, 33) * 8 + jdiv(jmod(n, 33) + 3, 4);
+    if (jmod(jump, 33) === 4 && jump - n === 4) leapJ += 1;
+    leapG = jdiv(gy, 4) - jdiv((jdiv(gy, 100) + 1) * 3, 4) - 150; march = 20 + leapJ - leapG;
+    if (noLeap) return { gy: gy, march: march };
+    if (jump - n < 6) n = n - jump + jdiv(jump + 4, 33) * 33;
+    leap = jmod(jmod(n + 1, 33) - 1, 4); if (leap === -1) leap = 4;
+    return { leap: leap, gy: gy, march: march };
+  }
+  function g2d(gy, gm, gd) { var d = jdiv((gy + jdiv(gm - 8, 6) + 100100) * 1461, 4) + jdiv(153 * jmod(gm + 9, 12) + 2, 5) + gd - 34840408; return d - jdiv(jdiv(gy + 100100 + jdiv(gm - 8, 6), 100) * 3, 4) + 752; }
+  function d2g(jdn) {
+    var j = 4 * jdn + 139361631; j = j + jdiv(jdiv(4 * jdn + 183187720, 146097) * 3, 4) * 4 - 3908;
+    var i = jdiv(jmod(j, 1461), 4) * 5 + 308, gd = jdiv(jmod(i, 153), 5) + 1, gm = jmod(jdiv(i, 153), 12) + 1, gy = jdiv(j, 1461) - 100100 + jdiv(8 - gm, 6);
+    return { gy: gy, gm: gm, gd: gd };
+  }
+  function j2d(jy, jm, jd) { var r = jalCal(jy, true); return g2d(r.gy, 3, r.march) + (jm - 1) * 31 - jdiv(jm, 7) * (jm - 7) + jd - 1; }
+  function d2j(jdn) {
+    var g = d2g(jdn), jy = g.gy - 621, r = jalCal(jy, false), jd, jm, k, f = g2d(g.gy, 3, r.march);
+    k = jdn - f;
+    if (k >= 0) { if (k <= 185) return { jy: jy, jm: 1 + jdiv(k, 31), jd: jmod(k, 31) + 1 }; k -= 186; }
+    else { jy -= 1; k += 179; if (r.leap === 1) k += 1; }
+    jm = 7 + jdiv(k, 30); jd = jmod(k, 30) + 1; return { jy: jy, jm: jm, jd: jd };
+  }
+  function toJalali(gy, gm, gd) { return d2j(g2d(gy, gm, gd)); }
+  function toGreg(jy, jm, jd) { return d2g(j2d(jy, jm, jd)); }
+  function jMonthLen(jy, jm) { return jm <= 6 ? 31 : jm <= 11 ? 30 : (jalCal(jy, false).leap === 0 ? 30 : 29); }
+  function p2(n) { return String(n).padStart(2, '0'); }
+  function jfmt(j) { return fa(j.jy + '/' + p2(j.jm) + '/' + p2(j.jd)); }
+  window.__jal = { toJalali: toJalali, toGreg: toGreg, jMonthLen: jMonthLen };
+
+  // انتخاب‌گر تاریخ شمسی (و ساعت). value: 'YYYY-MM-DD' یا ISO
+  function jpick(o) {
+    o = o || {};
+    var st = null;
+    function parse(v) {
+      if (!v) return null;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(v)) { var a = v.split('-').map(Number); return { gy: a[0], gm: a[1], gd: a[2], H: o.defH == null ? 23 : o.defH, M: o.defM == null ? 59 : o.defM }; }
+      var d = new Date(v); if (isNaN(d)) return null;
+      return { gy: d.getFullYear(), gm: d.getMonth() + 1, gd: d.getDate(), H: d.getHours(), M: d.getMinutes() };
+    }
+    st = parse(o.value);
+    var btn = h('button', { type: 'button', class: 'inp jbtn' }), wrap = h('div', { class: 'jwrap' }, btn);
+    function label() {
+      btn.textContent = '';
+      if (!st) { btn.append(h('span', { class: 'ph', text: o.placeholder || 'انتخاب تاریخ' })); }
+      else { var j = toJalali(st.gy, st.gm, st.gd); btn.append(h('b', { text: fa(j.jd) + ' ' + JMONTHS[j.jm - 1] + ' ' + fa(j.jy) }), o.time ? h('span', { class: 'tm', text: ' · ساعت ' + fa(p2(st.H) + ':' + p2(st.M)) }) : null); }
+      btn.prepend(h('span', { class: 'cal', text: '📅 ' }));
+    }
+    label();
+    btn.addEventListener('click', function () {
+      var now = new Date(), tj = toJalali(now.getFullYear(), now.getMonth() + 1, now.getDate());
+      var cj = st ? toJalali(st.gy, st.gm, st.gd) : tj, vy = cj.jy, vm = cj.jm, sel = st ? { jy: cj.jy, jm: cj.jm, jd: cj.jd } : null;
+      var H = st ? st.H : (o.defH == null ? 23 : o.defH), M = st ? st.M : (o.defM == null ? 59 : o.defM);
+      var bg = h('div', { class: 'jov' }), sheet = h('div', { class: 'jsheet' }), grid = h('div', { class: 'jgrid' }), title = h('div', { class: 'jtitle' });
+      function close() { bg.remove(); }
+      bg.addEventListener('click', function (e) { if (e.target === bg) close(); });
+      function step(dm, dy) { vm += dm; vy += dy; if (vm > 12) { vm = 1; vy++; } if (vm < 1) { vm = 12; vy--; } draw(); }
+      function nb(t, f, lbl) { return h('button', { type: 'button', class: 'jnav', 'aria-label': lbl, text: t, onclick: f }); }
+      function draw() {
+        title.textContent = JMONTHS[vm - 1] + ' ' + fa(vy);
+        grid.textContent = '';
+        ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'].forEach(function (w, i) { grid.append(h('div', { class: 'jw' + (i === 6 ? ' fri' : ''), text: w })); });
+        var g1 = toGreg(vy, vm, 1), first = (new Date(g1.gy, g1.gm - 1, g1.gd).getDay() + 1) % 7, len = jMonthLen(vy, vm);
+        for (var i = 0; i < first; i++) grid.append(h('div'));
+        for (var d = 1; d <= len; d++) (function (d) {
+          var on = sel && sel.jy === vy && sel.jm === vm && sel.jd === d, td = tj.jy === vy && tj.jm === vm && tj.jd === d, col = (first + d - 1) % 7 === 6;
+          grid.append(h('button', { type: 'button', class: 'jd' + (on ? ' on' : '') + (td ? ' today' : '') + (col ? ' fri' : ''), text: fa(d), onclick: function () { sel = { jy: vy, jm: vm, jd: d }; if (!o.time) done(); else draw(); } }));
+        })(d);
+      }
+      function done() {
+        if (!sel) { st = null; } else { var g = toGreg(sel.jy, sel.jm, sel.jd); st = { gy: g.gy, gm: g.gm, gd: g.gd, H: H, M: M }; }
+        label(); wrap.dispatchEvent(new Event('input', { bubbles: true })); close();
+      }
+      var hs = h('select', { class: 'inp' }), ms = h('select', { class: 'inp' });
+      for (var i = 0; i < 24; i++) hs.append(h('option', { value: i, selected: i === H, text: fa(p2(i)) }));
+      for (var k = 0; k < 60; k++) ms.append(h('option', { value: k, selected: k === M, text: fa(p2(k)) }));
+      hs.addEventListener('change', function () { H = +hs.value; }); ms.addEventListener('change', function () { M = +ms.value; });
+      sheet.append(h('div', { class: 'jhead' }, nb('«', function () { step(0, -1); }, 'سال قبل'), nb('‹', function () { step(-1, 0); }, 'ماه قبل'), title, nb('›', function () { step(1, 0); }, 'ماه بعد'), nb('»', function () { step(0, 1); }, 'سال بعد')), grid);
+      if (o.time) sheet.append(h('div', { class: 'jtime' }, h('span', { class: 'sub', text: 'ساعت:' }), ms, h('b', { text: ':' }), hs));
+      sheet.append(h('div', { class: 'jact' },
+        h('button', { type: 'button', class: 'btn pri', text: 'تأیید', onclick: function () { if (!sel) { toast('یک روز را انتخاب کنید.'); return; } done(); } }),
+        h('button', { type: 'button', class: 'btn', text: 'امروز', onclick: function () { sel = { jy: tj.jy, jm: tj.jm, jd: tj.jd }; vy = tj.jy; vm = tj.jm; if (o.time) draw(); else done(); } }),
+        h('button', { type: 'button', class: 'btn bad', text: 'پاک کردن', onclick: function () { sel = null; done(); } })));
+      bg.append(sheet); document.body.append(bg); draw();
+    });
+    return {
+      el: wrap,
+      get: function () { return st ? new Date(st.gy, st.gm - 1, st.gd, st.H, st.M, 0).toISOString() : ''; },
+      date: function () { return st ? st.gy + '-' + p2(st.gm) + '-' + p2(st.gd) : ''; }
+    };
+  }
+  function fmtDue(a) { return a.dueAt ? fmtDT(a.dueAt) : (a.dueDate ? fmtDay(a.dueDate) : ''); }
+  function remainText(ms) {
+    var m = Math.max(0, Math.floor(ms / 60000)), d = Math.floor(m / 1440), hh = Math.floor((m % 1440) / 60), mm = m % 60;
+    return (d ? fa(d) + ' روز و ' : '') + (hh || d ? fa(hh) + ' ساعت و ' : '') + fa(mm) + ' دقیقه';
+  }
+
+  /* ================= موسیقی ملایم (تولید زنده با Web Audio؛ بدون فایل صوتی) ================= */
+  var MUSIC_LIST = [['none', 'بدون موسیقی', '🔇'], ['calm', 'پیانوی آرام', '🎹'], ['dream', 'رؤیا (پد نرم)', '☁️'], ['rain', 'باران و پیانو', '🌧️'], ['ocean', 'موج دریا', '🌊'], ['lofi', 'لوفی ملایم', '🎧']];
+  var Music = (function () {
+    var ac = null, master = null, fx = null, nbuf = null, cur = '', playing = '', timers = [], srcs = [], vol = 0.55, muted = false, pv = null;
+    try { muted = localStorage.getItem('lms_music_off') === '1'; } catch (e) {}
+    var PENTA = [0, 2, 4, 7, 9];
+    function fr(n) { return 261.63 * Math.pow(2, n / 12); }
+    function init() {
+      if (ac) return true;
+      var C = window.AudioContext || window.webkitAudioContext; if (!C) return false;
+      ac = new C(); master = ac.createGain(); master.gain.value = 0;
+      var comp = ac.createDynamicsCompressor(); master.connect(comp); comp.connect(ac.destination);
+      fx = ac.createGain(); var d1 = ac.createDelay(1.0); d1.delayTime.value = 0.37; var fb = ac.createGain(); fb.gain.value = 0.4;
+      var lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2200; fx.connect(d1); d1.connect(lp); lp.connect(fb); fb.connect(d1); lp.connect(master);
+      var len = ac.sampleRate * 4; nbuf = ac.createBuffer(1, len, ac.sampleRate); var d = nbuf.getChannelData(0), b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (var i = 0; i < len; i++) { var w = Math.random() * 2 - 1; b0 = 0.99886 * b0 + w * 0.0555179; b1 = 0.99332 * b1 + w * 0.0750759; b2 = 0.969 * b2 + w * 0.153852; b3 = 0.8665 * b3 + w * 0.3104856; b4 = 0.55 * b4 + w * 0.5329522; b5 = -0.7616 * b5 - w * 0.016898; d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11; b6 = w * 0.115926; }
+      return true;
+    }
+    function note(f, t, dur, v, type, att) {
+      var o = ac.createOscillator(), g = ac.createGain(); o.type = type || 'sine'; o.frequency.value = f; att = att || 0.015;
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + att); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(master); g.connect(fx); o.start(t); o.stop(t + dur + 0.1);
+    }
+    function pad(f, t, dur, v) {
+      [-5, 5].forEach(function (c) {
+        var o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine'; o.frequency.value = f; o.detune.value = c;
+        g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + dur * 0.35); g.gain.linearRampToValueAtTime(0.0001, t + dur);
+        o.connect(g); g.connect(master); g.connect(fx); o.start(t); o.stop(t + dur + 0.1);
+      });
+    }
+    function noise(type, freq, q, gain, lfo) {
+      var s = ac.createBufferSource(); s.buffer = nbuf; s.loop = true;
+      var f = ac.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q || 0.7;
+      var g = ac.createGain(); g.gain.value = gain; s.connect(f); f.connect(g); g.connect(master); s.start(); srcs.push(s);
+      if (lfo) { var o = ac.createOscillator(), og = ac.createGain(); o.frequency.value = lfo.hz; og.gain.value = lfo.depth; o.connect(og); og.connect(g.gain); o.start(); srcs.push(o); }
+      return g;
+    }
+    function drone(f, v) { var o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine'; o.frequency.value = f; g.gain.value = v; o.connect(g); g.connect(master); o.start(); srcs.push(o); }
+    function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+    function rnd(a) { return a[Math.floor(Math.random() * a.length)]; }
+    var KINDS = {
+      calm: function (k) {
+        (function step() { if (playing !== k) return; var t = ac.currentTime + 0.05, n = rnd(PENTA) + rnd([0, 0, 12, 12, 24]);
+          note(fr(n), t, 3.4, 0.17, 'triangle'); if (Math.random() < 0.4) note(fr(n + rnd([7, 12])), t + 0.35, 3, 0.09, 'sine');
+          if (Math.random() < 0.25) note(fr(rnd([-24, -17, -12])), t, 5, 0.12, 'sine', 0.3);
+          later(step, 1500 + Math.random() * 2300); })();
+      },
+      dream: function (k) {
+        var ch = [[0, 4, 7, 11], [-3, 0, 4, 7], [-7, -3, 0, 4], [-5, -1, 2, 4]], i = 0;
+        (function step() { if (playing !== k) return; var t = ac.currentTime + 0.05; ch[i % 4].forEach(function (n, j) { pad(fr(n - 12), t + j * 0.18, 7.5, 0.05); }); pad(fr(ch[i % 4][0] - 24), t, 8, 0.06); i++; later(step, 6500); })();
+      },
+      rain: function (k) {
+        noise('bandpass', 1900, 0.5, 0.16); noise('highpass', 5000, 0.5, 0.025);
+        (function step() { if (playing !== k) return; var t = ac.currentTime + 0.05, n = rnd(PENTA) + rnd([12, 24]); note(fr(n), t, 3.6, 0.12, 'sine'); later(step, 3000 + Math.random() * 3500); })();
+      },
+      ocean: function (k) {
+        noise('lowpass', 650, 0.7, 0.13, { hz: 0.09, depth: 0.09 }); noise('lowpass', 1500, 0.5, 0.04, { hz: 0.13, depth: 0.03 });
+        drone(65.4, 0.035); drone(98, 0.025);
+        (function step() { if (playing !== k) return; var t = ac.currentTime + 0.05; note(fr(rnd([7, 12, 16, 19])), t, 4, 0.07, 'sine', 0.4); later(step, 6000 + Math.random() * 5000); })();
+      },
+      lofi: function (k) {
+        var prog = [[2, 5, 9, 12, 16], [-5, -1, 5, 9, 12], [0, 4, 7, 11, 14], [-3, 0, 4, 7, 11]], e = 0;
+        noise('highpass', 4200, 0.5, 0.006);
+        (function step() { if (playing !== k) return; var t = ac.currentTime + 0.04;
+          if (e % 8 === 0) prog[(e / 8) % 4].forEach(function (n, j) { var f = fr(n - 12); note(f, t + j * 0.035, 2.6, 0.075, 'sine'); note(f * 2, t + j * 0.035, 1.2, 0.025, 'triangle'); });
+          if (e % 8 === 0) note(fr(prog[(e / 8) % 4][0] - 24), t, 1.4, 0.16, 'sine');
+          if (e % 4 === 2) { var s = ac.createBufferSource(); s.buffer = nbuf; var f2 = ac.createBiquadFilter(); f2.type = 'highpass'; f2.frequency.value = 6500; var g = ac.createGain(); g.gain.setValueAtTime(0.05, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07); s.connect(f2); f2.connect(g); g.connect(master); s.start(t, Math.random() * 3, 0.1); }
+          if (e % 8 === 5 && Math.random() < 0.6) note(fr(rnd(PENTA) + 12), t, 1.6, 0.07, 'triangle');
+          e++; later(step, 385); })();
+      }
+    };
+    function halt() {
+      timers.forEach(clearTimeout); timers = [];
+      var old = srcs; srcs = [];
+      setTimeout(function () { old.forEach(function (s) { try { s.stop(); } catch (e) {} }); }, 900);
+    }
+    function level() { return muted ? 0 : vol; }
+    function startKind() {
+      if (!cur || !KINDS[cur] || !init()) return;
+      if (ac.state === 'suspended') ac.resume();
+      if (playing === cur) { master.gain.setTargetAtTime(level(), ac.currentTime, 0.8); return; }
+      halt(); playing = cur; KINDS[cur](cur); master.gain.setTargetAtTime(level(), ac.currentTime, 1.6);
+    }
+    function unlock() {
+      if (init() && ac.state === 'suspended') ac.resume();
+      if (cur && !muted) startKind();
+    }
+    ['pointerdown', 'touchstart', 'keydown', 'click'].forEach(function (ev) { document.addEventListener(ev, unlock, { passive: true }); });
+    return {
+      get muted() { return muted; },
+      state: function () { return { playing: playing, ac: ac && ac.state, srcs: srcs.length, timers: timers.length, gain: master && master.gain.value }; },
+      play: function (kind) { cur = KINDS[kind] ? kind : ''; if (!cur) return this.stop(); if (!muted) startKind(); },
+      stop: function () { cur = ''; playing = ''; if (ac && master) master.gain.setTargetAtTime(0, ac.currentTime, 0.25); halt(); clearTimeout(pv); pv = null; },
+      toggle: function () { muted = !muted; try { localStorage.setItem('lms_music_off', muted ? '1' : '0'); } catch (e) {} if (muted) { if (ac && master) master.gain.setTargetAtTime(0, ac.currentTime, 0.25); } else startKind(); return muted; },
+      preview: function (kind) {
+        var on = pv != null; this.stop(); if (on || !KINDS[kind]) return false;
+        var m = muted; muted = false; cur = kind; startKind(); muted = m;
+        pv = setTimeout(function () { Music.stop(); }, 12000); return true;
+      }
+    };
+  })();
+
+  window.__music = Music;
+  // انتخاب موسیقی برای معلم (با پیش‌شنیدن)
+  function musicPicker(value) {
+    var sel = h('select', { class: 'inp', style: 'flex:1' }, MUSIC_LIST.map(function (m) { return h('option', { value: m[0], selected: (value || 'none') === m[0], text: m[2] + ' ' + m[1] }); }));
+    var pb = h('button', { type: 'button', class: 'btn sm', text: '▶ پیش‌شنیدن' });
+    pb.addEventListener('click', function () { var on = Music.preview(sel.value); pb.textContent = on ? '■ توقف' : '▶ پیش‌شنیدن'; if (on) setTimeout(function () { pb.textContent = '▶ پیش‌شنیدن'; }, 12100); });
+    sel.addEventListener('change', function () { Music.stop(); pb.textContent = '▶ پیش‌شنیدن'; });
+    return { el: h('div', { class: 'field' }, h('label', { text: '🎵 موسیقی ملایم هنگام انجام (دانش‌آموز می‌شنود)' }), h('div', { class: 'row', style: 'gap:8px' }, sel, pb)), get: function () { return sel.value === 'none' ? '' : sel.value; }, stop: function () { Music.stop(); } };
+  }
+
+  /* ================= فضای رنگی آزمون و فعالیت ================= */
+  var THEMES = [
+    ['#7c3aed', '#ec4899', '#f5f0ff', '#ffeef8'], ['#0ea5e9', '#6366f1', '#ecf8ff', '#f0efff'], ['#10b981', '#06b6d4', '#ecfdf5', '#ecfeff'],
+    ['#f59e0b', '#ef4444', '#fff8eb', '#fff0f0'], ['#ec4899', '#8b5cf6', '#fff0f8', '#f5f0ff'], ['#14b8a6', '#3b82f6', '#effdfb', '#eff6ff']
+  ];
+  function studyStart(X, id, music) {
+    var th = THEMES[hash(id || 'x') % THEMES.length], b = document.body;
+    b.classList.add('study');
+    b.style.setProperty('--sa', th[0]); b.style.setProperty('--sb', th[1]);
+    b.style.setProperty('--sg', 'linear-gradient(135deg,' + th[0] + ',' + th[1] + ')');
+    b.style.setProperty('--sbg', 'linear-gradient(160deg,' + th[2] + ',' + th[3] + ')');
+    var btn = null;
+    if (music) {
+      Music.play(music);
+      btn = h('button', { type: 'button', class: 'mus', 'aria-label': 'موسیقی' });
+      var paint = function () { btn.textContent = Music.muted ? '🔇' : '🎵'; btn.classList.toggle('off', Music.muted); };
+      btn.addEventListener('click', function () { Music.toggle(); paint(); toast(Music.muted ? 'موسیقی خاموش شد.' : 'موسیقی روشن شد 🎶'); });
+      paint(); document.body.append(btn);
+    }
+    X.onLeave(function () { b.classList.remove('study'); ['--sa', '--sb', '--sg', '--sbg'].forEach(function (k) { b.style.removeProperty(k); }); Music.stop(); if (btn) btn.remove(); });
+  }
+  function hero(emoji, title, sub, chips) {
+    return h('div', { class: 'hero' }, h('div', { class: 'he', text: emoji }), h('div', { class: 'ht' }, h('b', { text: title }), sub ? h('span', { text: sub }) : null), chips && chips.length ? h('div', { class: 'hc' }, chips) : null);
+  }
+
   /* ================= معلم ================= */
   function sectionHead(title, btn) { return h('div', { class: 'sec' }, h('h3', { text: title }), btn || null); }
   function inp(attrs) { return h('input', Object.assign({ class: 'inp' }, attrs)); }
@@ -1144,7 +1442,7 @@ body.has-nav .tabs{display:none}
       body.append(h('button', { class: 'item', onclick: function () { nav('t_subs', { id: a.id }); } },
         h('div', { class: 'em em-pri', text: a.hasFile ? fileTypeIcon(a.fileType) : '📝' }),
         h('div', { class: 'grow' }, h('div', { class: 'title', text: a.title }),
-          h('div', { class: 'sub', text: fa(a.submitted) + ' از ' + fa(r.students.length) + ' تحویل · ' + fa(a.graded) + ' نمره‌دار' + (a.dueDate ? ' · مهلت ' + fmtDay(a.dueDate) : '') })),
+          h('div', { class: 'sub', text: fa(a.submitted) + ' از ' + fa(r.students.length) + ' تحویل · ' + fa(a.graded) + ' نمره‌دار' + ((a.dueAt || a.dueDate) ? ' · مهلت ' + fmtDue(a) : '') })),
         wait > 0 ? badge('b-warn', fa(wait) + ' منتظر نمره') : (a.status === 'closed' ? badge('b-gray', 'بسته') : badge('b-good', 'باز'))));
     });
   }
@@ -1220,9 +1518,10 @@ body.has-nav .tabs{display:none}
     box.textContent = '';
     var title = inp({ value: a.title || '', maxlength: '150', placeholder: 'عنوان فعالیت' });
     var desc = h('textarea', { class: 'inp', maxlength: '3000', placeholder: 'توضیحات و دستورالعمل برای دانش‌آموزان…', value: a.desc || '' });
-    var due = inp({ type: 'date', value: a.dueDate || '' }), max = inp({ type: 'number', inputmode: 'decimal', value: a.maxScore || 20, min: '1' });
+    var duePick = jpick({ value: a.dueAt || a.dueDate || '', time: true, placeholder: 'انتخاب تاریخ و ساعت مهلت' }), music = musicPicker(a.music), max = inp({ type: 'number', inputmode: 'decimal', value: a.maxScore || 20, min: '1' });
     var fi = h('input', { type: 'file', accept: '.pdf,.html,.htm,.png,.jpg,.jpeg,.webp,.txt' });
     var closed = h('input', { type: 'checkbox', checked: a.status === 'closed' }), rm = h('input', { type: 'checkbox' });
+    X.onLeave(music.stop);
     var dirty = false; box.addEventListener('input', function () { dirty = true; });
     X.setGuard(function () { return !dirty || window.confirm('تغییرات ذخیره نشده از بین می‌رود. خارج می‌شوید؟'); });
     var qs = (a.questions || []).map(function (q) { return { q: q.q, points: q.points }; }), qlist = h('div'), total = h('span', { class: 'badge b-pri' });
@@ -1256,11 +1555,11 @@ body.has-nav .tabs{display:none}
     btn.addEventListener('click', function () {
       busy(btn, true, 'در حال ذخیره…');
       readFile(fi).then(function (f) {
-        return call('lmsSaveActivity', { id: a.id, courseId: p.courseId, title: title.value, desc: desc.value, dueDate: due.value, maxScore: max.value, status: closed.checked ? 'closed' : 'open', file: f, removeFile: rm.checked, questions: qs });
+        return call('lmsSaveActivity', { id: a.id, courseId: p.courseId, title: title.value, desc: desc.value, dueDate: duePick.date(), dueAt: duePick.get(), music: music.get(), maxScore: max.value, status: closed.checked ? 'closed' : 'open', file: f, removeFile: rm.checked, questions: qs });
       }).then(function () { dirty = false; toast('ذخیره شد ✅', 'ok'); history.back(); }).catch(function (e) { busy(btn, false); toast(e.message, 'er'); });
     });
     box.append(h('div', { class: 'card' }, field('عنوان', title), field('توضیحات', desc),
-      h('div', { class: 'two' }, field('مهلت تحویل', due), field('بارم', max))), qcard, h('div', { class: 'card' },
+      field('مهلت تحویل (شمسی؛ بعد از ساعت مقرر، فعالیت خودکار بسته می‌شود)', duePick.el), field('بارم', max), music.el), qcard, h('div', { class: 'card' },
       field('فایل فعالیت (PDF یا HTML تعاملی یا تصویر · حداکثر ۸ مگابایت)', fi),
       a.hasFile ? h('label', { class: 'sw', style: 'margin-bottom:10px' }, rm, 'حذف فایل فعلی (' + (a.fileName || '') + ')') : null,
       h('label', { class: 'sw', style: 'margin-bottom:14px' }, closed, 'بستن فعالیت (دانش‌آموزان دیگر نمی‌توانند ارسال کنند)'), btn,
@@ -1279,7 +1578,7 @@ body.has-nav .tabs{display:none}
         call('lmsCourseOverview', cid).then(function (o) { var f = o.activities.filter(function (x) { return x.id === p.id; })[0]; nav('t_act_form', { courseId: cid, a: f }); }).catch(function (e) { toast(e.message, 'er'); });
       } }, ic('edit'))] });
       box.textContent = '';
-      box.append(h('div', { class: 'card' }, h('div', { class: 'row', style: 'flex-wrap:wrap;gap:6px' }, badge('b-pri', 'بارم: ' + num(a.maxScore)), a.dueDate ? badge('b-info', 'مهلت: ' + fmtDay(a.dueDate)) : null, a.status === 'closed' ? badge('b-gray', 'بسته') : badge('b-good', 'باز')),
+      box.append(h('div', { class: 'card' }, h('div', { class: 'row', style: 'flex-wrap:wrap;gap:6px' }, badge('b-pri', 'بارم: ' + num(a.maxScore)), (a.dueAt || a.dueDate) ? badge('b-info', 'مهلت: ' + fmtDue(a)) : null, a.status === 'closed' ? badge('b-gray', 'بسته') : badge('b-good', 'باز')),
         a.desc ? h('div', { class: 'desc', style: 'margin-top:8px', text: a.desc }) : null,
         a.hasFile ? h('div', { class: 'filebox', style: 'margin-top:8px' }, h('span', { text: fileTypeIcon(a.fileType) }), h('div', { class: 'grow sub', text: a.fileName }), fileBtn('activity', a.id, a.fileName, a.fileType)) : null));
       var cnt = { graded: 0, submitted: 0, none: 0 }; r.rows.forEach(function (x) { cnt[x.status]++; });
@@ -1428,8 +1727,8 @@ body.has-nav .tabs{display:none}
       var title = inp({ value: e.title || '', maxlength: '150', placeholder: 'عنوان آزمون' });
       var link = inp({ type: 'url', value: e.link || '', placeholder: 'https://forms.gle/…', dir: 'ltr' });
       var max = inp({ type: 'number', inputmode: 'decimal', value: e.maxScore || 20 }), dur = inp({ type: 'number', inputmode: 'numeric', value: e.durationMin || 0, min: '0' });
-      var st = inp({ type: 'datetime-local', value: toLocalInput(e.startAt) }), en = inp({ type: 'datetime-local', value: toLocalInput(e.endAt) });
-      var pub = h('input', { type: 'checkbox', checked: e.status === 'published' }), sa = h('input', { type: 'checkbox', checked: !!e.showAnswers });
+      var stP = jpick({ value: e.startAt || '', time: true, defH: 8, defM: 0, placeholder: 'شروع (اختیاری)' }), enP = jpick({ value: e.endAt || '', time: true, defH: 23, defM: 59, placeholder: 'پایان (اختیاری)' }), music = musicPicker(e.music); X.onLeave(music.stop);
+      var pub = h('input', { type: 'checkbox', checked: e.status === 'published' }), sa = h('input', { type: 'checkbox', checked: !!e.showAnswers }), shf = h('input', { type: 'checkbox', checked: e.shuffle !== false });
       var seg = h('div', { class: 'seg' }), linkBox = h('div'), quizBox = h('div'), qlist = h('div');
       var dirty = false; box.addEventListener('input', function () { dirty = true; });
       X.setGuard(function () { return !dirty || window.confirm('تغییرات ذخیره نشده از بین می‌رود. خارج می‌شوید؟'); });
@@ -1479,20 +1778,20 @@ body.has-nav .tabs{display:none}
             qs = qs.concat(got); quick.value = ''; dirty = true; drawQs();
             var bad = got.filter(function (q) { return q.correct < 0; }).length; toast(fa(got.length) + ' سؤال اضافه شد' + (bad ? '؛ گزینهٔ درست ' + fa(bad) + ' مورد را مشخص کنید.' : '.'), bad ? '' : 'ok');
           } })),
-        field('مدت آزمون (دقیقه؛ ۰ = نامحدود)', dur), h('label', { class: 'sw', style: 'margin-bottom:12px' }, sa, 'پس از ارسال، پاسخ‌های درست به دانش‌آموز نمایش داده شود'));
+        field('مدت آزمون (دقیقه؛ ۰ = نامحدود)', dur), h('label', { class: 'sw', style: 'margin-bottom:12px' }, sa, 'پس از ارسال، پاسخ‌های درست به دانش‌آموز نمایش داده شود'), h('label', { class: 'sw', style: 'margin-bottom:12px' }, shf, 'ترتیب سؤالات و گزینه‌ها برای هر دانش‌آموز به‌صورت خودکار متفاوت باشد'));
       linkBox.append(field('لینک آزمون (گوگل‌فرم، پرس‌لاین، …)', link), h('div', { class: 'note in', text: 'نمرهٔ آزمون لینکی را بعد از برگزاری، در صفحهٔ «نتایج آزمون» به‌صورت دستی ثبت می‌کنید.' }));
       drawSeg(); drawKind(); drawQs();
       var btn = h('button', { class: 'btn pri block', text: 'ذخیره' });
       btn.addEventListener('click', function () {
         busy(btn, true);
         var data = { id: p.id, courseId: p.courseId || e.courseId, title: title.value, kind: kind, link: link.value, questions: qs.map(function (q) { return { q: q.q, options: q.options, correct: q.options.filter(function (o, j) { return nz(o) || j < 0; }).length ? q.correct : -1, points: q.points }; }),
-          durationMin: dur.value, maxScore: max.value, startAt: fromLocalInput(st.value), endAt: fromLocalInput(en.value), status: pub.checked ? 'published' : 'draft', showAnswers: sa.checked };
+          durationMin: dur.value, maxScore: max.value, startAt: stP.get(), endAt: enP.get(), music: music.get(), status: pub.checked ? 'published' : 'draft', showAnswers: sa.checked, shuffle: shf.checked };
         // گزینه‌های خالی حذف می‌شوند؛ اندیس درست را متناسب کنیم
         data.questions = qs.map(function (q) { var idx = 0, ok = -1, os = []; q.options.forEach(function (o, j) { if (nz(o)) { if (j === q.correct) ok = idx; os.push(o); idx++; } }); return { q: q.q, options: os, correct: ok, points: q.points }; });
         call('lmsSaveExam', data).then(function () { dirty = false; toast('آزمون ذخیره شد ✅', 'ok'); history.back(); }).catch(function (er) { busy(btn, false); toast(er.message, 'er'); });
       });
       box.append(h('div', { class: 'card' }, field('عنوان آزمون', title), seg), linkBox, quizBox,
-        h('div', { class: 'card' }, h('div', { class: 'two' }, field('بارم کل', max), field('', h('span'))), field('شروع (اختیاری)', st), field('پایان (اختیاری)', en),
+        h('div', { class: 'card' }, h('div', { class: 'two' }, field('بارم کل', max), field('', h('span'))), field('زمان شروع آزمون (شمسی، اختیاری)', stP.el), field('زمان پایان آزمون (شمسی، اختیاری)', enP.el), music.el,
           h('label', { class: 'sw', style: 'margin-bottom:14px' }, pub, 'منتشر شود (برای دانش‌آموزان قابل مشاهده باشد)'), btn,
           p.id ? h('button', { class: 'btn bad block', style: 'margin-top:8px', text: 'حذف آزمون', onclick: function () {
             ask('آزمون و همهٔ نتایج آن حذف شود؟', 'حذف', true).then(function (y) { if (y) call('lmsDeleteExam', p.id).then(function () { dirty = false; toast('حذف شد', 'ok'); history.go(-2); }).catch(function (er) { toast(er.message, 'er'); }); });
@@ -1581,10 +1880,10 @@ body.has-nav .tabs{display:none}
       box.textContent = '';
       var types = ['فعالیت کلاسی', 'کلاسی', 'کوییز', 'مستمر', 'پایانی', 'پروژه', 'سایر'];
       var title = inp({ value: it.title, maxlength: '120', placeholder: 'مثلاً: کوییز فصل ۲' }), type = h('select', { class: 'inp' }, types.map(function (t) { return h('option', { value: t, selected: t === it.type, text: t }); }));
-      var max = inp({ type: 'number', inputmode: 'decimal', value: it.maxScore }), date = inp({ type: 'date', value: it.date || '' }), note = inp({ value: it.note || '', maxlength: '300', placeholder: 'توضیح (اختیاری)' });
+      var max = inp({ type: 'number', inputmode: 'decimal', value: it.maxScore }), datePick = jpick({ value: it.date || '', time: false, placeholder: 'انتخاب تاریخ' }), note = inp({ value: it.note || '', maxlength: '300', placeholder: 'توضیح (اختیاری)' });
       var ins = {}, dirty = false; box.addEventListener('input', function () { dirty = true; });
       X.setGuard(function () { return !dirty || window.confirm('تغییرات ذخیره نشده از بین می‌رود. خارج می‌شوید؟'); });
-      box.append(h('div', { class: 'card' }, field('عنوان', title), h('div', { class: 'two' }, field('نوع', type), field('بارم', max)), field('تاریخ', date), field('توضیح', note)));
+      box.append(h('div', { class: 'card' }, field('عنوان', title), h('div', { class: 'two' }, field('نوع', type), field('بارم', max)), field('تاریخ (شمسی)', datePick.el), field('توضیح', note)));
       box.append(sectionHead('نمرات دانش‌آموزان'));
       g.students.forEach(function (s) {
         var ip = h('input', { class: 'gin', type: 'number', inputmode: 'decimal', step: 'any', min: '0', value: it.entries[s.code] == null ? '' : it.entries[s.code], 'aria-label': 'نمرهٔ ' + s.name });
@@ -1594,7 +1893,7 @@ body.has-nav .tabs{display:none}
       var btn = h('button', { class: 'btn pri block', style: 'margin-top:10px', text: 'ذخیره' });
       btn.addEventListener('click', function () {
         busy(btn, true);
-        call('lmsSaveGradeItem', { courseId: p.courseId, itemId: p.itemId, title: title.value, type: type.value, maxScore: max.value, date: date.value, note: note.value, entries: Object.keys(ins).map(function (k) { return { studentCode: k, score: ins[k].value }; }) })
+        call('lmsSaveGradeItem', { courseId: p.courseId, itemId: p.itemId, title: title.value, type: type.value, maxScore: max.value, date: datePick.date(), note: note.value, entries: Object.keys(ins).map(function (k) { return { studentCode: k, score: ins[k].value }; }) })
           .then(function (res) { dirty = false; toast(fa(res.saved) + ' نمره ذخیره شد ✅', 'ok'); history.back(); }).catch(function (e) { busy(btn, false); toast(e.message, 'er'); });
       });
       box.append(btn);
