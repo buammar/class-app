@@ -1,6 +1,6 @@
 // Service Worker ساده: فقط فایل‌های ثابت اپ را کش می‌کند.
 // درخواست‌های API (Apps Script) هرگز کش نمی‌شوند تا داده‌های دانش‌آموز جایی ذخیره نشود.
-var CACHE = 'lms-class-v7';
+var CACHE = 'lms-class-v8';
 var ASSETS = ['./', './index.html', './config.js', './api-shim.js', './manifest.json',
               './icon-192.png', './icon-512.png'];
 
